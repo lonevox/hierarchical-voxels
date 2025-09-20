@@ -1,0 +1,52 @@
+[gd_scene load_steps=12 format=3 uid="uid://n8k7camqxnwg"]
+
+[ext_resource type="Script" uid="uid://c8tq7wmpsbfrj" path="res://VoxelTerrain.gd" id="1_a202f"]
+[ext_resource type="Script" uid="uid://y1hcj8axrk41" path="res://free_look_camera.gd" id="1_noarx"]
+
+[sub_resource type="VoxelGeneratorWaves" id="VoxelGeneratorWaves_noarx"]
+channel = 0
+
+[sub_resource type="VoxelBlockyModelEmpty" id="VoxelBlockyModelEmpty_noarx"]
+
+[sub_resource type="VoxelBlockyModelCube" id="VoxelBlockyModelCube_a0tk4"]
+
+[sub_resource type="VoxelBlockyLibrary" id="VoxelBlockyLibrary_r3fl7"]
+models = Array[VoxelBlockyModel]([SubResource("VoxelBlockyModelEmpty_noarx"), SubResource("VoxelBlockyModelCube_a0tk4")])
+
+[sub_resource type="VoxelMesherBlocky" id="VoxelMesherBlocky_jka67"]
+library = SubResource("VoxelBlockyLibrary_r3fl7")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_noarx"]
+vertex_color_use_as_albedo = true
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_a202f"]
+
+[sub_resource type="Sky" id="Sky_noarx"]
+sky_material = SubResource("ProceduralSkyMaterial_a202f")
+
+[sub_resource type="Environment" id="Environment_a0tk4"]
+background_mode = 2
+sky = SubResource("Sky_noarx")
+
+[node name="Node3D" type="Node3D"]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.525308, 0.850912, 0, -0.850912, 0.525308, 0, 6.09484, 2.84321)
+current = true
+far = 10000.0
+script = ExtResource("1_noarx")
+
+[node name="VoxelTerrain" type="VoxelTerrain" parent="."]
+generator = SubResource("VoxelGeneratorWaves_noarx")
+mesher = SubResource("VoxelMesherBlocky_jka67")
+material_override = SubResource("StandardMaterial3D_noarx")
+script = ExtResource("1_a202f")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.50653, 0.862222, 0, -0.862222, 0.50653, 0, 0, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_a0tk4")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.61493)

@@ -1,0 +1,16 @@
+[gd_resource type="NoiseTexture3D" load_steps=2 format=3 uid="uid://c67xpff5rneoy"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_j30i5"]
+noise_type = 0
+frequency = 0.03
+fractal_octaves = 8
+fractal_lacunarity = 1.5
+fractal_gain = 0.9
+domain_warp_enabled = true
+
+[resource]
+width = 128
+height = 128
+depth = 128
+noise = SubResource("FastNoiseLite_j30i5")
+seamless = true

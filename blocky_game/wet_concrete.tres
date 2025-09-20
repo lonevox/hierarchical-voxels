@@ -1,0 +1,9 @@
+[gd_resource type="ORMMaterial3D" load_steps=3 format=3 uid="uid://cw85kxowmkj37"]
+
+[ext_resource type="Texture2D" uid="uid://ch81ib0h0gfqg" path="res://blocky_game/wet_concrete_albedo.tres" id="1_6ywsr"]
+[ext_resource type="Texture2D" uid="uid://cl6gb7dt3etnj" path="res://blocky_game/wet_concrete_orm.tres" id="2_ecsmx"]
+
+[resource]
+albedo_texture = ExtResource("1_6ywsr")
+orm_texture = ExtResource("2_ecsmx")
+ao_enabled = true

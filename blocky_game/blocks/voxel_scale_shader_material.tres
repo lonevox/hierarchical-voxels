@@ -1,0 +1,21 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://cl8ftl3f0exim"]
+
+[ext_resource type="Shader" uid="uid://bgyq03qj0dwex" path="res://blocky_game/blocks/voxel_scale.gdshader" id="1_8ekxf"]
+[ext_resource type="Texture2D" uid="uid://bxo4bsw3yg42b" path="res://blocky_game/blocks/terrain.png" id="2_ekaoc"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_8ekxf")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/texture_albedo = ExtResource("2_ekaoc")
+shader_parameter/albedo_texture_size = Vector2i(256, 256)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/specular = 0.0
+shader_parameter/metallic = 0.0
+shader_parameter/uv1_scale = Vector3(1, 1, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+shader_parameter/scale = 1.0
