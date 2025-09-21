@@ -4,6 +4,14 @@ class_name VoxelMultiTerrain
 
 const VOXEL_SCALE_SHADER_MATERIAL = preload("uid://cl8ftl3f0exim")
 
+## The max view distance of all terrains. See VoxelTerrain.max_view_distance.
+@export_range(0, 512) var max_view_diatance := 128:
+	set(value):
+		assert(max_view_diatance >= 0)
+		assert(max_view_diatance <= 512)
+		max_view_diatance = value
+		for terrain in terrains:
+			terrain.max_view_distance = value
 @export var library: VoxelBlockyLibrary
 
 ## The VoxelTerrains within this MultiVoxelTerrain.

@@ -1,5 +1,6 @@
-[gd_scene load_steps=36 format=3 uid="uid://dtfktti54mneg"]
+[gd_scene load_steps=37 format=3 uid="uid://dtfktti54mneg"]
 
+[ext_resource type="Script" uid="uid://l3lvso20howc" path="res://Settings.gd" id="2_vmukk"]
 [ext_resource type="Script" uid="uid://bukhhnwyc247r" path="res://blocky_game/VoxelMultiTerrain.gd" id="4_rbe4n"]
 [ext_resource type="Script" uid="uid://b2sgbpc3ratxy" path="res://blocky_game/blocky_game.gd" id="5"]
 [ext_resource type="VoxelBlockyLibrary" uid="uid://ctn2wqssoxvj5" path="res://blocky_game/blocks/voxel_library.tres" id="6_bxxj4"]
@@ -134,6 +135,10 @@ shader_parameter/skew_amount = 0.05
 [node name="Game" type="Node"]
 script = ExtResource("5")
 
+[node name="Settings" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("2_vmukk")
+
 [node name="Blocks" type="Node" parent="."]
 script = ExtResource("12")
 
@@ -151,7 +156,6 @@ library = ExtResource("6_bxxj4")
 generator = SubResource("VoxelGeneratorNoise2D_bxxj4")
 mesher = SubResource("VoxelMesherBlocky_rbe4n")
 gi_mode = 1
-max_view_distance = 512
 generate_collisions = false
 mesh_block_size = 32
 
@@ -160,7 +164,6 @@ transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 generator = SubResource("VoxelGeneratorNoise2D_oycm1")
 mesher = SubResource("VoxelMesherBlocky_ssdvb")
 gi_mode = 1
-max_view_distance = 512
 generate_collisions = false
 mesh_block_size = 32
 
@@ -169,7 +172,6 @@ transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0)
 generator = SubResource("VoxelGeneratorNoise2D_x2ref")
 mesher = SubResource("VoxelMesherBlocky_bxxj4")
 gi_mode = 1
-max_view_distance = 512
 generate_collisions = false
 mesh_block_size = 32
 
@@ -178,7 +180,6 @@ transform = Transform3D(16, 0, 0, 0, 16, 0, 0, 0, 16, 0, 0, 0)
 generator = SubResource("VoxelGeneratorNoise2D_dh5iw")
 mesher = SubResource("VoxelMesherBlocky_3o6mx")
 gi_mode = 1
-max_view_distance = 512
 generate_collisions = false
 
 [node name="VoxelTerrain5" type="VoxelTerrain" parent="VoxelMultiTerrain"]
@@ -186,7 +187,6 @@ transform = Transform3D(64, 0, 0, 0, 64, 0, 0, 0, 64, 0, 0, 0)
 generator = SubResource("VoxelGeneratorNoise2D_ssdvb")
 mesher = SubResource("VoxelMesherBlocky_oycm1")
 gi_mode = 1
-max_view_distance = 512
 generate_collisions = false
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]

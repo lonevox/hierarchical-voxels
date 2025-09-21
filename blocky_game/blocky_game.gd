@@ -55,6 +55,8 @@ func set_port(port: int):
 
 
 func _ready():
+	_multi_terrain.max_view_diatance = %Settings.view_distance * 32
+	
 	if _network_mode == NETWORK_MODE_HOST:
 		_logger.prefix = "Server: "
 		
