@@ -12,7 +12,7 @@ const RandomTicks = preload("./random_ticks.gd")
 const WaterUpdater = preload("./water.gd")
 
 @onready var _light: DirectionalLight3D = $DirectionalLight3D
-@onready var _voxel_multi_terrain: VoxelMultiTerrain = $VoxelMultiTerrain
+@onready var _multi_terrain: VoxelMultiTerrain = $VoxelMultiTerrain
 @onready var _characters_container: Node = $Players
 
 var _network_mode := NETWORK_MODE_SINGLEPLAYER
@@ -35,7 +35,7 @@ var _logger := GameLogger.new()
 
 
 func get_terrain() -> VoxelMultiTerrain:
-	return _voxel_multi_terrain
+	return _multi_terrain
 
 
 func get_network_mode() -> int:
@@ -74,7 +74,7 @@ func _ready():
 		# Configure VoxelTerrain as server
 		# TODO: Figure out if this is fine for multiplayer (might need to also sync other terrains?)
 		var synchronizer := VoxelTerrainMultiplayerSynchronizer.new()
-		_voxel_multi_terrain.terrains[0].add_child(synchronizer)
+		_multi_terrain.terrains[0].add_child(synchronizer)
 
 	elif _network_mode == NETWORK_MODE_CLIENT:
 		_logger.prefix = "Client: "
@@ -96,8 +96,8 @@ func _ready():
 		# Configure VoxelTerrain as client
 		# TODO: Figure out if this is fine for multiplayer (might need to also sync other terrains?)
 		var synchronizer := VoxelTerrainMultiplayerSynchronizer.new()
-		_voxel_multi_terrain.terrains[0].add_child(synchronizer)
-		_voxel_multi_terrain.terrains[0].stream = null
+		_multi_terrain.terrains[0].add_child(synchronizer)
+		_multi_terrain.terrains[0].stream = null
 
 	if _network_mode == NETWORK_MODE_HOST or _network_mode == NETWORK_MODE_SINGLEPLAYER:
 		add_child(RandomTicks.new())
@@ -185,7 +185,7 @@ func _notification(what: int):
 
 
 func _save_world():
-	_voxel_multi_terrain.terrains[0].save_modified_blocks()
+	_multi_terrain.terrains[0].save_modified_blocks()
 
 
 func _spawn_character(peer_id: int, pos: Vector3) -> Node3D:
