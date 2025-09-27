@@ -1,13 +1,15 @@
-[gd_resource type="VoxelBlockyLibrary" load_steps=60 format=3 uid="uid://ctn2wqssoxvj5"]
+[gd_resource type="VoxelBlockyLibrary" load_steps=68 format=4 uid="uid://ctn2wqssoxvj5"]
 
 [ext_resource type="ArrayMesh" uid="uid://rq0nk6t5jqyc" path="res://blocky_game/blocks/grass/grass.obj" id="1"]
-[ext_resource type="Shader" uid="uid://cioi8rg4lur7i" path="res://blocky_game/concrete.gdshader" id="1_xlq4u"]
-[ext_resource type="ImageTexture3D" path="res://blocky_game/blocks/noise_texture_3d_128.tres" id="2_q4ece"]
+[ext_resource type="Shader" uid="uid://baifl51dssjjr" path="res://blocky_game/concrete_triplanar.gdshader" id="1_8mrmn"]
+[ext_resource type="Texture2D" uid="uid://c57raug1xnavu" path="res://blocky_game/Poliigon_ConcreteFloorPoured_7656_2k/Poliigon_ConcreteFloorPoured_7656_BaseColor.jpg" id="2_8mrmn"]
 [ext_resource type="Material" uid="uid://bvllkch8a7b0w" path="res://blocky_game/blocks/terrain_material.tres" id="2_r7axq"]
-[ext_resource type="ArrayMesh" uid="uid://lfjiid6jpidp" path="res://blocky_game/blocks/cube_full_uv.obj" id="2_xlq4u"]
 [ext_resource type="ArrayMesh" uid="uid://dungrukis54l4" path="res://blocky_game/blocks/log/log_y.obj" id="3"]
+[ext_resource type="Texture2D" uid="uid://qrpw30d3htt2" path="res://blocky_game/Poliigon_ConcreteFloorPoured_7656_2k/Poliigon_ConcreteFloorPoured_7656_Metallic.jpg" id="3_nicr2"]
 [ext_resource type="ArrayMesh" uid="uid://cttendrth7rqh" path="res://blocky_game/blocks/log/log_x.obj" id="4"]
+[ext_resource type="Texture2D" uid="uid://cl5fpynq1v62j" path="res://blocky_game/Poliigon_ConcreteFloorPoured_7656_2k/Poliigon_ConcreteFloorPoured_7656_Normal.png" id="4_i18ja"]
 [ext_resource type="ArrayMesh" uid="uid://bur41ote1leoo" path="res://blocky_game/blocks/log/log_z.obj" id="5"]
+[ext_resource type="Texture2D" uid="uid://dq4j3apo8km5i" path="res://blocky_game/Poliigon_ConcreteFloorPoured_7656_2k/Poliigon_ConcreteFloorPoured_7656_Roughness.jpg" id="5_5dbwy"]
 [ext_resource type="ArrayMesh" uid="uid://b1ip507w1anoc" path="res://blocky_game/blocks/stairs/stairs_nx.obj" id="6"]
 [ext_resource type="Material" uid="uid://o6pjkujm0owf" path="res://blocky_game/blocks/terrain_material_foliage.tres" id="6_7k7uf"]
 [ext_resource type="ArrayMesh" uid="uid://dm05scqbatw2v" path="res://blocky_game/blocks/planks/planks.obj" id="7"]
@@ -35,18 +37,85 @@
 [sub_resource type="VoxelBlockyModelEmpty" id="VoxelBlockyModelEmpty_mk2sr"]
 resource_name = "air"
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_q4ece"]
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_2vsq0"]
+frequency = 0.02
+fractal_octaves = 10
+fractal_lacunarity = 1.5
+domain_warp_enabled = true
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_upf65"]
+width = 1024
+height = 1024
+noise = SubResource("FastNoiseLite_2vsq0")
+seamless = true
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_8mrmn"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_nicr2"]
+width = 1024
+height = 1024
+noise = SubResource("FastNoiseLite_8mrmn")
+seamless = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fsqnb"]
 render_priority = 0
-shader = ExtResource("1_xlq4u")
-shader_parameter/skew_amount = 0.05
-shader_parameter/noise_texture = ExtResource("2_q4ece")
+shader = ExtResource("1_8mrmn")
+shader_parameter/albedo = Color(0.82321197, 0.82321197, 0.82321185, 1)
+shader_parameter/texture_albedo = ExtResource("2_8mrmn")
+shader_parameter/albedo_texture_size = Vector2i(1024, 1024)
+shader_parameter/point_size = 1.0000000149012
+shader_parameter/roughness = 1.0
+shader_parameter/texture_metallic = ExtResource("3_nicr2")
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("5_5dbwy")
+shader_parameter/specular = 0.3999999910592
+shader_parameter/metallic = 0.999999977648
+shader_parameter/texture_normal = ExtResource("4_i18ja")
+shader_parameter/normal_scale = 1.000000807500001
+shader_parameter/uv1_blend_sharpness = 1.0
+shader_parameter/uv1_scale = Vector3(0.05, 0.05, 0.05)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+shader_parameter/noise = SubResource("NoiseTexture2D_upf65")
+shader_parameter/streak_noise = SubResource("NoiseTexture2D_nicr2")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_880mh"]
+_surfaces = [{
+"aabb": AABB(0, 0, 0, 1, 1, 1),
+"format": 34896613377,
+"index_count": 36,
+"index_data": PackedByteArray("AAABAAIAAgADAAAAAgABAAQAAAADAAUAAAAFAAEAAgAGAAMABgAFAAMABAAGAAIAAQAFAAcAAQAHAAQABwAFAAYABAAHAAYA"),
+"name": "Material",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("AAD//wAAAAD/////AAAAAAAA/////wAAAAAAAP//AAD///////8AAAAAAAAAAAAA//8AAP//AAD//wAAAAAAAA==")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_ipn0x"]
+_surfaces = [{
+"aabb": AABB(0, 0, 0, 1, 1, 1),
+"attribute_data": PackedByteArray("/9//f/+f/3//3/8//5//P/+f/z//X/8//58AAP9fAAD/n////1////+f/7//X/+//1//f/8f/3//X/8//x//P/+f/3//X/9//5//P/9f/z//n/+//1//v/+f/3//X/9/"),
+"format": 34896613399,
+"index_count": 36,
+"index_data": PackedByteArray("AAABAAIAAgABAAMABAAFAAYABgAFAAcACAAJAAoACgAJAAsADAANAA4ADgANAA8AEAARABIAEgARABMAFAAVABYAFgAVABcA"),
+"name": "Material",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("AAD//wAA////////AAD//wAA////////////////////////////v///AAD///+/AAD//////78AAAAA////vwAA/////1TVAAAAAP//VNUAAP//AABU1QAAAAAAAFTV//8AAAAA/78AAAAAAAD/v///AAD///+/AAAAAP///7//////AABU1f//AAAAAFTV////////VNX//wAA//9U1QAA//8AAP//AAAAAAAA////////AAD/////AAAAAP///3//v/9//7//f/+//3//v/////////////////////9U1VTVVNVU1VTVVNVU1VTVAAD/fwAA/38AAP9/AAD/f6oqqiqqKqoqqiqqKqoqqir/v/+//7//v/+//7//v/+/")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_880mh")
 
 [sub_resource type="VoxelBlockyModelMesh" id="VoxelBlockyModelMesh_7h3nj"]
 resource_name = "dirt"
 collision_aabbs = Array[AABB]([AABB(0, 0, 0, 1, 1, 1)])
-material_override_0 = SubResource("ShaderMaterial_q4ece")
+material_override_0 = SubResource("ShaderMaterial_fsqnb")
 collision_enabled_0 = true
-mesh = ExtResource("2_xlq4u")
+mesh = SubResource("ArrayMesh_ipn0x")
 
 [sub_resource type="VoxelBlockyModelMesh" id="VoxelBlockyModelMesh_7ws3s"]
 resource_name = "grass"

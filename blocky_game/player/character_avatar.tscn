@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://ojfpybxqac1f"]
+[gd_scene load_steps=12 format=3 uid="uid://ojfpybxqac1f"]
 
 [ext_resource type="Script" uid="uid://mt4wx4ajlty0" path="res://blocky_game/player/character_controller.gd" id="1"]
 [ext_resource type="Script" uid="uid://53thcfe1tap6" path="res://blocky_game/player/avatar_camera.gd" id="2"]
@@ -8,11 +8,40 @@
 [ext_resource type="PackedScene" uid="uid://bm2v4asqyh6a" path="res://blocky_game/player/character_visual.tscn" id="6_peahy"]
 [ext_resource type="PackedScene" uid="uid://cg54toj1o7c2u" path="res://blocky_game/gui/inventory/inventory.tscn" id="7"]
 
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_vop3k"]
+emission_shape = 3
+emission_box_extents = Vector3(15, 0.5, 15)
+direction = Vector3(0, -1, 0)
+spread = 5.0
+initial_velocity_min = 15.0
+initial_velocity_max = 15.0
+collision_mode = 1
+collision_friction = 0.0
+collision_bounce = 0.0
+
+[sub_resource type="Curve" id="Curve_uk22n"]
+_limits = [0.0, 0.1, 0.0, 1.0]
+_data = [Vector2(0, 0), 0.0, 0.0067131245, 0, 0, Vector2(0.07398569, 0.1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dogem"]
+transparency = 1
+cull_mode = 2
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_color = Color(0.1827, 0.202265, 0.21, 0.078431375)
+use_particle_trails = true
+
+[sub_resource type="RibbonTrailMesh" id="RibbonTrailMesh_nco1x"]
+material = SubResource("StandardMaterial3D_dogem")
+size = 0.4
+curve = SubResource("Curve_uk22n")
+
 [node name="CharacterAvatar" type="Node3D"]
 script = ExtResource("1")
-speed = 50.0
+speed = 6.0
 gravity = 40.0
-jump_force = 40.0
+jump_force = 10.0
 head = NodePath("Camera")
 
 [node name="Camera" type="Camera3D" parent="."]
@@ -76,5 +105,16 @@ color = Color(0, 0, 0, 0.501961)
 
 [node name="VoxelViewer" type="VoxelViewer" parent="."]
 view_distance = 16384
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20, 0)
+amount = 5000
+lifetime = 1.5
+randomness = 0.5
+visibility_aabb = AABB(-4, -24, -4, 8, 8, 8)
+trail_enabled = true
+trail_lifetime = 0.2
+process_material = SubResource("ParticleProcessMaterial_vop3k")
+draw_pass_1 = SubResource("RibbonTrailMesh_nco1x")
 
 [connection signal="changed" from="HUD/Inventory" to="HUD/HotBar" method="_on_Inventory_changed"]

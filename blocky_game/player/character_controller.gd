@@ -38,17 +38,31 @@ func _physics_process(delta: float):
 	
 	motor = motor.normalized() * speed
 	
-	if Input.is_key_pressed(KEY_F):
-		_flying = !_flying
-	
 	_velocity.x = motor.x
 	_velocity.z = motor.z
 	if !_flying:
 		_velocity.y -= gravity * delta
+	else:
+		_velocity.x *= 5
+		_velocity.z *= 5
+		if Input.is_key_pressed(KEY_CTRL):
+			_velocity.x *= 2
+			_velocity.z *= 2
+		_velocity.y = 0
 	
-	if _grounded and Input.is_key_pressed(KEY_SPACE):
-		_velocity.y = jump_force
-		_grounded = false
+	if Input.is_key_pressed(KEY_F):
+		_flying = !_flying
+		if _flying:
+			_velocity.y = 0
+	
+	if Input.is_key_pressed(KEY_SPACE):
+		if _grounded:
+			_velocity.y = jump_force
+			_grounded = false
+		elif _flying:
+			_velocity.y = speed * 5
+	if _flying and Input.is_key_pressed(KEY_SHIFT):
+		_velocity.y = speed * 5
 	
 	var motion := _velocity * delta
 	
@@ -72,10 +86,10 @@ func _physics_process(delta: float):
 		global_translate(motion)
 
 		# If new motion doesnt move vertically and we were falling before, we just landed
-		if absf(motion.y) < 0.001 and prev_motion.y < -0.001:
+		if !_flying and absf(motion.y) < 0.001 and prev_motion.y < -0.001:
 			_grounded = true
 
-		if box_mover_motion.has_stepped_up:
+		if !_flying and box_mover_motion.has_stepped_up:
 			# When we step up, the motion vector will have vertical movement,
 			# however it is not caused by falling or jumping, but by snapping the body on
 			# top of the step. So after we applied motion, we consider it grounded,

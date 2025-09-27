@@ -1,7 +1,7 @@
 shader_type spatial;
 
 uniform float skew_amount = 0.05;
-uniform sampler3D noise_texture;
+uniform sampler3D base_noise_texture;
 
 varying vec3 world_position_skewed;
 
@@ -79,13 +79,15 @@ void vertex() {
 }
 
 void fragment() {
-	vec3 noise_sample = texture(noise_texture, world_position_skewed * .25).rgb;
-	noise_sample = remap_vec3(noise_sample, -3., 0., -1., 1.);
-	vec3 noise_sample2 = texture(noise_texture, world_position_skewed * .5).rgb;
-	noise_sample2 = remap_vec3(noise_sample2, -1., 1., 0., 1.);
-	noise_sample -= noise_sample2 * .5;
+	vec3 base_noise_sample = texture(base_noise_texture, world_position_skewed * .25).rgb;
+	base_noise_sample = remap_vec3(base_noise_sample, -3., 0., -1., 1.);
+	vec3 base_noise_sample2 = texture(base_noise_texture, world_position_skewed * .5).rgb;
+	base_noise_sample2 = remap_vec3(base_noise_sample2, -1., 1., 0., 1.);
+	base_noise_sample -= base_noise_sample2 * .5;
+	
+	vec3 weathered_seam_noise_sample = texture(base_noise_texture, world_position_skewed).rgb;
 
-	vec3 bump = node_bump(.05, .5, noise_sample.r, vec3(1.), world_position_skewed, 0., VIEW_MATRIX, INV_VIEW_MATRIX);
+	vec3 bump = node_bump(.05, .5, base_noise_sample.r, vec3(1.), world_position_skewed, 0., VIEW_MATRIX, INV_VIEW_MATRIX);
 	NORMAL_MAP = bump;
-	ALBEDO = noise_sample.rgb * .1;
+	ALBEDO = base_noise_sample.rgb * .1;
 }
