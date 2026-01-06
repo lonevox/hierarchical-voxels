@@ -62,7 +62,7 @@ func _physics_process(delta: float):
 		elif _flying:
 			_velocity.y = speed * 5
 	if _flying and Input.is_key_pressed(KEY_SHIFT):
-		_velocity.y = speed * 5
+		_velocity.y = -speed * 5
 	
 	var motion := _velocity * delta
 	
