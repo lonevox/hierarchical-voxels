@@ -10,6 +10,7 @@ const InteractionCommon = preload("./interaction_common.gd")
 
 const COLLISION_LAYER_AVATAR = 2
 const SERVER_PEER_ID = 1
+const BASE_RAYCAST_MAX_DISTANCE = 16.0
 
 const _hotbar_keys = {
 	KEY_1: 0,
@@ -39,6 +40,8 @@ var _cursor: MeshInstance3D = null
 var _action_place := false
 var _action_use := false
 var _action_pick := false
+## One-based index of the terrain on which blocks are placed.
+var _placement_scale := 1
 
 
 func _ready():
@@ -49,18 +52,23 @@ func _ready():
 		mesh_instance.material_override = cursor_material
 	mesh_instance.set_scale(Vector3.ONE * 1.01)
 	_cursor = mesh_instance
-	_multi_terrain.terrains[0].add_child(_cursor)
+	_multi_terrain.add_child(_cursor)
 
 	var mp := get_tree().get_multiplayer()
 	if mp.has_multiplayer_peer() == false or mp.is_server():
 		_water_updater = get_node("/root/Main/Game/Water")
 
 
+## Returns the result of a raycast from the player's head in the direction they are looking,
+## up to a maximum distance based on the placement scale.
 func _get_pointed_voxel() -> MultiTerrainVoxelRaycastResult:
 	var origin := _head.get_global_transform().origin
 	assert(not Util.vec3_has_nan(origin))
 	var forward := -_head.get_transform().basis.z.normalized()
-	var hit := _voxel_tool.raycast(origin, forward)
+	var placement_terrain_index := _placement_scale - 1
+	var placement_terrain_scale := _multi_terrain.terrains[placement_terrain_index].scale.x
+	var max_distance := BASE_RAYCAST_MAX_DISTANCE * placement_terrain_scale
+	var hit := _voxel_tool.raycast(origin, forward, max_distance)
 	return hit
 
 
@@ -68,12 +76,15 @@ func _physics_process(_delta):
 	if _multi_terrain == null:
 		return
 	
+	DDD.set_text("Placement scale", str(_placement_scale))
+
 	var hit := _get_pointed_voxel()
 	if hit != null:
-		if _cursor.get_parent() != hit.terrain:
-			_cursor.reparent(hit.terrain, false)
+		var placement_terrain_index := _placement_scale - 1
+		var placement_terrain := _multi_terrain.terrains[placement_terrain_index]
 		_cursor.show()
-		_cursor.set_position(hit.raycast_result.position)
+		_cursor.position = hit.global_previous_position[placement_terrain_index]
+		_cursor.scale = Vector3.ONE * placement_terrain.scale.x * 1.01
 		DDD.set_text("Global pointed voxel", str(hit.global_position))
 		DDD.set_text("Pointed voxel", str(hit.raycast_result.position))
 		DDD.set_text("Global dist", str(hit.global_distance))
@@ -94,20 +105,23 @@ func _physics_process(_delta):
 			
 			if _action_use and has_voxel:
 				var pos := hit.raycast_result.position
-				_place_single_block(voxel_tool, pos, 0)
+				_place_single_block(hit.terrain_index, pos, 0)
 			
 			elif _action_place && inv_item != null:
-				var pos := hit.raycast_result.previous_position
-				var global_pos := hit.global_previous_position
+				var placement_terrain_index := _placement_scale - 1
+				var placement_terrain := _multi_terrain.terrains[placement_terrain_index]
+				var placement_terrain_scale := int(placement_terrain.scale.x)
+				var global_pos := hit.global_previous_position[placement_terrain_index]
 				if has_voxel == false:
-					pos = hit.raycast_result.position
-					global_pos = hit.global_position
+					global_pos = hit.global_position[placement_terrain_index]
+				var pos := Vector3i(global_pos / placement_terrain_scale)
 				# TODO: The collision area isn't necessarily going to be a whole cube voxel if e.g., the placed voxel is a stair shape
-				var placement_collisions := _voxel_tool.get_voxels_in_area(global_pos, hit.terrain.scale)
-				placement_collisions.erase(hit.terrain)
+				var placement_size := Vector3i.ONE * placement_terrain_scale
+				var placement_collisions := _voxel_tool.get_voxels_in_area(
+					global_pos, placement_size)
 				print(placement_collisions)
 				if placement_collisions.is_empty():
-					_place_single_block(voxel_tool, pos, inv_item.id)
+					_place_single_block(placement_terrain_index, pos, inv_item.id)
 					print("Place voxel at ", pos)
 				else:
 					print("Can't place here!")
@@ -152,6 +166,10 @@ func _unhandled_input(event: InputEvent):
 			if _hotbar_keys.has(event.keycode):
 				var slot_index = _hotbar_keys[event.keycode]
 				_hotbar.select_slot(slot_index)
+			elif event.keycode == KEY_EQUAL:
+				_placement_scale = mini(_placement_scale + 1, _multi_terrain.terrains.size())
+			elif event.keycode == KEY_MINUS:
+				_placement_scale = maxi(_placement_scale - 1, 1)
 
 
 func _error_on_voxel(terrain: VoxelTerrain, pos: Vector3i) -> void:
@@ -175,19 +193,21 @@ func _error_on_voxel(terrain: VoxelTerrain, pos: Vector3i) -> void:
 	)
 
 
-func _place_single_block(terrain_tool: VoxelTool, pos: Vector3, block_id: int):
+func _place_single_block(terrain_index: int, pos: Vector3, block_id: int):
 	var look_dir := -_head.get_transform().basis.z
 	var mp := get_tree().get_multiplayer()
 	if mp.has_multiplayer_peer() and not mp.is_server():
-		rpc_id(SERVER_PEER_ID, &"receive_place_single_block", pos, look_dir, block_id)
+		rpc_id(SERVER_PEER_ID, &"receive_place_single_block", terrain_index, pos, look_dir, block_id)
 	else:
+		var terrain := _multi_terrain.terrains[terrain_index]
+		var terrain_tool := _voxel_tool.voxel_tools[terrain]
 		InteractionCommon.place_single_block(terrain_tool, pos, look_dir,
 			block_id, _block_types, _water_updater)
 
 
 # TODO Maybe use `rpc_config` so this would be less awkward?
 @rpc("any_peer", "call_remote", "reliable", 0)
-func receive_place_single_block(pos: Vector3, look_dir: Vector3, block_id: int):
+func receive_place_single_block(terrain_index: int, pos: Vector3, look_dir: Vector3, block_id: int):
 	# The server has a different script for remote players
 	push_error("Didn't expect this method to be called")
 

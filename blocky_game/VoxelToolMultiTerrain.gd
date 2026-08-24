@@ -39,15 +39,20 @@ func is_area_editable(aabb: AABB) -> bool:
 ## Casts a raycast with VoxelTool.raycast on all terrains.
 func raycast(origin: Vector3, direction: Vector3, max_distance: float = 10.0, collision_mask: int = 0xFFFFFFFF) -> MultiTerrainVoxelRaycastResult:
 	var closest_hit: VoxelRaycastResult
-	var closest_terrain: VoxelTerrain
-	for terrain in multi_terrain.terrains:
+	var closest_terrain_index: int
+	var closest_global_distance := INF
+	for i in range(multi_terrain.terrains.size()):
+		var terrain := multi_terrain.terrains[i]
 		var voxel_tool := voxel_tools[terrain]
 		var hit := voxel_tool.raycast(origin, direction, max_distance, collision_mask)
-		if hit && (closest_hit == null || hit.distance / terrain.scale.x < closest_hit.distance):
+		var global_distance := hit.distance / terrain.scale.x if hit else INF
+		if global_distance < closest_global_distance:
 			closest_hit = hit
-			closest_terrain = terrain
+			closest_terrain_index = i
+			closest_global_distance = global_distance
 	if closest_hit:
-		return MultiTerrainVoxelRaycastResult.new(closest_hit, closest_terrain)
+		return MultiTerrainVoxelRaycastResult.new(
+			closest_hit, multi_terrain, closest_terrain_index, origin, direction)
 	return null
 
 
@@ -99,8 +104,11 @@ func get_voxels_in_area(pos: Vector3i, size: Vector3i) -> Dictionary[VoxelTerrai
 	for terrain in multi_terrain.terrains:
 		out[terrain] = []
 		var voxel_tool := voxel_tools[terrain]
-		var pos_scaled := Vector3i((pos / terrain.scale.x).floor())
-		_for_each_position_in_area(pos_scaled, size, func(position_in_area: Vector3i):
+		var terrain_scale := terrain.scale.x
+		var pos_scaled := Vector3i((Vector3(pos) / terrain_scale).floor())
+		var end_scaled := Vector3i((Vector3(pos + size) / terrain_scale).ceil())
+		var size_scaled := end_scaled - pos_scaled
+		_for_each_position_in_area(pos_scaled, size_scaled, func(position_in_area: Vector3i):
 			if voxel_tool.get_voxel(position_in_area) != 0:
 				out[terrain].append(position_in_area))
 	
