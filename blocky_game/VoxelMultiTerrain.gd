@@ -26,6 +26,9 @@ const _BOX_MOVER_COLLISION_MARGIN := 0.001
 	get_node("./VoxelTerrain3"),
 	get_node("./VoxelTerrain4"),
 	get_node("./VoxelTerrain5"),
+	get_node("./VoxelTerrain6"),
+	get_node("./VoxelTerrain7"),
+	get_node("./VoxelTerrain8"),
 ]
 
 var _box_mover := VoxelBoxMover.new()

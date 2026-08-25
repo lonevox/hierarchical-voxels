@@ -1,4 +1,4 @@
-[gd_scene load_steps=50 format=4 uid="uid://dtfktti54mneg"]
+[gd_scene load_steps=55 format=4 uid="uid://dtfktti54mneg"]
 
 [ext_resource type="Script" uid="uid://l3lvso20howc" path="res://Settings.gd" id="2_vmukk"]
 [ext_resource type="Script" uid="uid://bukhhnwyc247r" path="res://blocky_game/VoxelMultiTerrain.gd" id="4_rbe4n"]
@@ -88,6 +88,12 @@ curve = SubResource("Curve_ipn0x")
 library = ExtResource("6_bxxj4")
 occlusion_darkness = 0.9
 
+[sub_resource type="VoxelStreamMemory" id="VoxelStreamMemory_vmukk"]
+
+[sub_resource type="VoxelMesherBlocky" id="VoxelMesherBlocky_3o6mx"]
+library = ExtResource("6_bxxj4")
+occlusion_darkness = 0.9
+
 [sub_resource type="Curve" id="Curve_iihdp"]
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.6814159, 0.286215), 0.0, 0.0, 0, 0, Vector2(0.6843658, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 4
@@ -104,7 +110,13 @@ height_start = -75.0
 noise = SubResource("FastNoiseLite_d300o")
 curve = SubResource("Curve_iihdp")
 
-[sub_resource type="VoxelMesherBlocky" id="VoxelMesherBlocky_3o6mx"]
+[sub_resource type="VoxelMesherBlocky" id="VoxelMesherBlocky_vmukk"]
+library = ExtResource("6_bxxj4")
+occlusion_darkness = 0.9
+
+[sub_resource type="VoxelStreamMemory" id="VoxelStreamMemory_x2ref"]
+
+[sub_resource type="VoxelMesherBlocky" id="VoxelMesherBlocky_x2ref"]
 library = ExtResource("6_bxxj4")
 occlusion_darkness = 0.9
 
@@ -127,6 +139,8 @@ curve = SubResource("Curve_rbe4n")
 [sub_resource type="VoxelMesherBlocky" id="VoxelMesherBlocky_oycm1"]
 library = ExtResource("6_bxxj4")
 occlusion_darkness = 0.9
+
+[sub_resource type="VoxelStreamMemory" id="VoxelStreamMemory_iihdp"]
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_880mh"]
 _surfaces = [{
@@ -303,15 +317,36 @@ generate_collisions = false
 mesh_block_size = 32
 
 [node name="VoxelTerrain4" type="VoxelTerrain" parent="VoxelMultiTerrain"]
-transform = Transform3D(16, 0, 0, 0, 16, 0, 0, 0, 16, 0, 0, 0)
-generator = SubResource("VoxelGeneratorNoise2D_dh5iw")
+transform = Transform3D(8, 0, 0, 0, 8, 0, 0, 0, 8, 0, 0, 0)
+stream = SubResource("VoxelStreamMemory_vmukk")
 mesher = SubResource("VoxelMesherBlocky_3o6mx")
 gi_mode = 1
 generate_collisions = false
 
 [node name="VoxelTerrain5" type="VoxelTerrain" parent="VoxelMultiTerrain"]
+transform = Transform3D(16, 0, 0, 0, 16, 0, 0, 0, 16, 0, 0, 0)
+generator = SubResource("VoxelGeneratorNoise2D_dh5iw")
+mesher = SubResource("VoxelMesherBlocky_vmukk")
+gi_mode = 1
+generate_collisions = false
+
+[node name="VoxelTerrain6" type="VoxelTerrain" parent="VoxelMultiTerrain"]
+transform = Transform3D(32, 0, 0, 0, 32, 0, 0, 0, 32, 0, 0, 0)
+stream = SubResource("VoxelStreamMemory_x2ref")
+mesher = SubResource("VoxelMesherBlocky_x2ref")
+gi_mode = 1
+generate_collisions = false
+
+[node name="VoxelTerrain7" type="VoxelTerrain" parent="VoxelMultiTerrain"]
 transform = Transform3D(64, 0, 0, 0, 64, 0, 0, 0, 64, 0, 0, 0)
 generator = SubResource("VoxelGeneratorNoise2D_ssdvb")
+mesher = SubResource("VoxelMesherBlocky_oycm1")
+gi_mode = 1
+generate_collisions = false
+
+[node name="VoxelTerrain8" type="VoxelTerrain" parent="VoxelMultiTerrain"]
+transform = Transform3D(128, 0, 0, 0, 128, 0, 0, 0, 128, 0, 0, 0)
+stream = SubResource("VoxelStreamMemory_iihdp")
 mesher = SubResource("VoxelMesherBlocky_oycm1")
 gi_mode = 1
 generate_collisions = false
