@@ -121,10 +121,10 @@ func _physics_process(_delta):
 				var pos := Vector3i(global_pos / placement_terrain_scale)
 				# TODO: The collision area isn't necessarily going to be a whole cube voxel if e.g., the placed voxel is a stair shape
 				var placement_size := Vector3i.ONE * placement_terrain_scale
-				var placement_collisions := _voxel_tool.get_voxels_in_area(global_pos, placement_size)
-				if placement_collisions.is_empty():
+				if not _voxel_tool.has_voxels_in_area(global_pos, placement_size):
 					_place_single_block(placement_terrain_index, pos, inv_item.id)
 				else:
+					var placement_collisions := _voxel_tool.get_voxels_in_area(global_pos, placement_size)
 					_error_highlight.set_voxels(placement_collisions)
 					_error_highlight.flash(Color.RED, 0.1, 0.5, 0.3)
 	

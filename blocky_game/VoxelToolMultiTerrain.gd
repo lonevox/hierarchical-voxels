@@ -2,6 +2,10 @@ extends RefCounted
 class_name VoxelToolMultiTerrain
 
 
+const _VOXEL_CHANNEL := VoxelBuffer.CHANNEL_TYPE
+const _VOXEL_CHANNEL_MASK := 1 << _VOXEL_CHANNEL
+
+
 ## The VoxelMultiTerrain to query.
 var multi_terrain: VoxelMultiTerrain
 ## The position at the start of the area in the coordinate space of the smallest VoxelTerrain.
@@ -10,6 +14,7 @@ var position: Vector3i
 var area: Vector3i
 
 var voxel_tools: Dictionary[VoxelTerrain, VoxelTool]
+var _area_query_buffers: Dictionary[VoxelTerrain, VoxelBuffer]
 
 
 func _init(multi_terrain: VoxelMultiTerrain) -> void:
@@ -19,9 +24,10 @@ func _init(multi_terrain: VoxelMultiTerrain) -> void:
 	
 	for terrain in multi_terrain.terrains:
 		var voxel_tool := terrain.get_voxel_tool()
-		voxel_tool.channel = VoxelBuffer.CHANNEL_TYPE
+		voxel_tool.channel = _VOXEL_CHANNEL
 		voxel_tool.mode = VoxelTool.MODE_SET
 		voxel_tools[terrain] = voxel_tool
+		_area_query_buffers[terrain] = VoxelBuffer.new()
 
 
 ## Returns true if the specified voxel area can be edited in every terrain. This can also be
@@ -82,61 +88,69 @@ func _get_placement_collisions(target_terrain: VoxelTerrain, pos: Vector3i) -> D
 	return out
 
 
-## Returns the positions of voxels in an area, but only the voxels of the largest terrain found, if any.
-## Returns null if no voxels are found.
-## This can be used to confirm that there are voxels within an area.
-## If you want to get all voxels in an area in all terrains, instead use _get_voxels_in_area.
-#func _are_voxels_in_area(pos: Vector3i, size: Vector3i) -> VoxelAreaResult:
-	#for i in multi_terrain.terrains.size():
-		## Get terrains in reverse order so they're highest to lowest scale
-		#var terrain := multi_terrain.terrains[-i - 1]
-		#var voxel_tool := voxel_tools[terrain]
-		#var voxel_positions: Array[Vector3i] = []
-		#var pos_scaled := Vector3i((pos * terrain.scale.x).floor())
-		#for area_pos in _get_positions_in_area(pos, size):
-			#if voxel_tool.get_voxel(area_pos) != 0:
-				#voxel_positions.append(area_pos)
-		#if !voxel_positions.is_empty():
-			#return VoxelAreaResult.new(terrain, voxel_positions)
-	#return null
+## Returns whether any non-air voxel intersects an area expressed in the coordinate space of the
+## smallest terrain.
+func has_voxels_in_area(pos: Vector3i, size: Vector3i) -> bool:
+	if size.x <= 0 or size.y <= 0 or size.z <= 0:
+		return false
+
+	# Check larger terrains first because they cover the area with fewer voxels and can reject the
+	# placement before a lower-scale buffer has to be copied.
+	for terrain_index in range(multi_terrain.terrains.size() - 1, -1, -1):
+		var terrain := multi_terrain.terrains[terrain_index]
+		var scaled_area := _get_scaled_area(terrain, pos, size)
+		var buffer := _copy_area(terrain, Vector3i(scaled_area.position), Vector3i(scaled_area.size))
+		if _buffer_has_voxels(buffer):
+			return true
+
+	return false
 
 
+## Returns every non-air voxel intersecting an area expressed in the coordinate space of the
+## smallest terrain, grouped by terrain.
 func get_voxels_in_area(pos: Vector3i, size: Vector3i) -> Dictionary[VoxelTerrain, Array]:
 	var out: Dictionary[VoxelTerrain, Array] = {}
+	if size.x <= 0 or size.y <= 0 or size.z <= 0:
+		return out
+
 	for terrain in multi_terrain.terrains:
-		out[terrain] = []
-		var voxel_tool := voxel_tools[terrain]
-		var terrain_scale := terrain.scale.x
-		var pos_scaled := Vector3i((Vector3(pos) / terrain_scale).floor())
-		var end_scaled := Vector3i((Vector3(pos + size) / terrain_scale).ceil())
-		var size_scaled := end_scaled - pos_scaled
-		_for_each_position_in_area(pos_scaled, size_scaled, func(position_in_area: Vector3i):
-			if voxel_tool.get_voxel(position_in_area) != 0:
-				out[terrain].append(position_in_area))
-	
-	# Remove empty terrain entries. They're there so that less code needs to happen in the nested for loop.
-	var empty_terrains: Array[VoxelTerrain] = []
-	for key in out:
-		var position_array := out[key]
-		if position_array.is_empty():
-			empty_terrains.append(key)
-	for terrain in empty_terrains:
-		out.erase(terrain)
-	
+		var scaled_area := _get_scaled_area(terrain, pos, size)
+		var pos_scaled := Vector3i(scaled_area.position)
+		var size_scaled := Vector3i(scaled_area.size)
+		var buffer := _copy_area(terrain, pos_scaled, size_scaled)
+		if not _buffer_has_voxels(buffer):
+			continue
+
+		var voxel_positions: Array = []
+		# VoxelBuffer stores voxels in ZXY order, with Y contiguous in memory.
+		for z in size_scaled.z:
+			for x in size_scaled.x:
+				for y in size_scaled.y:
+					if buffer.get_voxel(x, y, z, _VOXEL_CHANNEL) != 0:
+						voxel_positions.append(pos_scaled + Vector3i(x, y, z))
+
+		if not voxel_positions.is_empty():
+			out[terrain] = voxel_positions
+
 	return out
 
 
-func _get_positions_in_area(pos: Vector3i, size: Vector3i) -> Array[Vector3i]:
-	var out: Array[Vector3i] = []
-	for x in range(size.x):
-		for y in range(size.y):
-			for z in range(size.z):
-				out.append(pos + Vector3i(x, y, z))
-	return out
+func _get_scaled_area(terrain: VoxelTerrain, pos: Vector3i, size: Vector3i) -> AABB:
+	var terrain_scale := terrain.scale.x
+	var pos_scaled := Vector3i((Vector3(pos) / terrain_scale).floor())
+	var end_scaled := Vector3i((Vector3(pos + size) / terrain_scale).ceil())
+	return AABB(pos_scaled, end_scaled - pos_scaled)
 
 
-func _for_each_position_in_area(pos: Vector3i, size: Vector3i, callback: Callable) -> void:
-	for x in range(size.x):
-		for y in range(size.y):
-			for z in range(size.z):
-				callback.call(pos + Vector3i(x, y, z))
+func _copy_area(terrain: VoxelTerrain, pos: Vector3i, size: Vector3i) -> VoxelBuffer:
+	var buffer := _area_query_buffers[terrain]
+	if buffer.get_size() != size:
+		buffer.create(size.x, size.y, size.z)
+	voxel_tools[terrain].copy(pos, buffer, _VOXEL_CHANNEL_MASK, false)
+	return buffer
+
+
+func _buffer_has_voxels(buffer: VoxelBuffer) -> bool:
+	# If every value were air, the channel would be uniform. A uniform channel needs one lookup to
+	# distinguish uniform air from uniform solid.
+	return not buffer.is_uniform(_VOXEL_CHANNEL) or buffer.get_voxel(0, 0, 0, _VOXEL_CHANNEL) != 0
