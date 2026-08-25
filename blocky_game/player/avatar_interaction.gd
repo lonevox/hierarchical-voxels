@@ -35,6 +35,7 @@ const _hotbar_keys = {
 @onready var _water_updater : WaterUpdater
 @onready var _multi_terrain: VoxelMultiTerrain = get_node("/root/Main/Game/VoxelMultiTerrain")
 @onready var _voxel_tool := _multi_terrain.get_voxel_tool()
+@onready var _voxel_highlight_manager: VoxelHighlightManager = get_node("/root/Main/Game/VoxelHighlightManager")
 
 var _cursor: MeshInstance3D = null
 var _action_place := false
@@ -42,6 +43,7 @@ var _action_use := false
 var _action_pick := false
 ## One-based index of the terrain on which blocks are placed.
 var _placement_scale := 1
+var _error_highlight: VoxelHighlight
 
 
 func _ready():
@@ -57,6 +59,8 @@ func _ready():
 	var mp := get_tree().get_multiplayer()
 	if mp.has_multiplayer_peer() == false or mp.is_server():
 		_water_updater = get_node("/root/Main/Game/Water")
+
+	_error_highlight = _voxel_highlight_manager.create_highlight(self)
 
 
 ## Returns the result of a raycast from the player's head in the direction they are looking,
@@ -117,18 +121,12 @@ func _physics_process(_delta):
 				var pos := Vector3i(global_pos / placement_terrain_scale)
 				# TODO: The collision area isn't necessarily going to be a whole cube voxel if e.g., the placed voxel is a stair shape
 				var placement_size := Vector3i.ONE * placement_terrain_scale
-				var placement_collisions := _voxel_tool.get_voxels_in_area(
-					global_pos, placement_size)
-				print(placement_collisions)
+				var placement_collisions := _voxel_tool.get_voxels_in_area(global_pos, placement_size)
 				if placement_collisions.is_empty():
 					_place_single_block(placement_terrain_index, pos, inv_item.id)
-					print("Place voxel at ", pos)
 				else:
-					print("Can't place here!")
-					for terrain in placement_collisions:
-						var collisions := placement_collisions[terrain]
-						for collision in collisions:
-							_error_on_voxel(terrain, collision)
+					_error_highlight.set_voxels(placement_collisions)
+					_error_highlight.flash(Color.RED, 0.1, 0.5, 0.3)
 	
 	elif inv_item.type == InventoryItem.TYPE_ITEM:
 		if _action_use:
@@ -170,27 +168,6 @@ func _unhandled_input(event: InputEvent):
 				_placement_scale = mini(_placement_scale + 1, _multi_terrain.terrains.size())
 			elif event.keycode == KEY_MINUS:
 				_placement_scale = maxi(_placement_scale - 1, 1)
-
-
-func _error_on_voxel(terrain: VoxelTerrain, pos: Vector3i) -> void:
-	var box := CSGBox3D.new()
-	box.scale = Vector3.ONE * 1.01
-	var material := StandardMaterial3D.new()
-	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_DEPTH_PRE_PASS
-	material.albedo_color = Color(1, 0, 0, 0)
-	box.material = material
-	
-	terrain.add_child(box)
-	box.position = Vector3(pos) + box.size / 2
-	
-	var tween := get_tree().create_tween()
-	tween.tween_property(material, "albedo_color", Color.RED, 0.1)
-	tween.tween_interval(0.5)
-	tween.tween_property(material, "albedo_color", Color(1, 0, 0, 0), 0.3)
-	tween.tween_callback(func():
-		terrain.remove_child(box)
-		box.queue_free()
-	)
 
 
 func _place_single_block(terrain_index: int, pos: Vector3, block_id: int):

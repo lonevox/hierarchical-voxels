@@ -1,4 +1,4 @@
-[gd_scene load_steps=49 format=4 uid="uid://dtfktti54mneg"]
+[gd_scene load_steps=50 format=4 uid="uid://dtfktti54mneg"]
 
 [ext_resource type="Script" uid="uid://l3lvso20howc" path="res://Settings.gd" id="2_vmukk"]
 [ext_resource type="Script" uid="uid://bukhhnwyc247r" path="res://blocky_game/VoxelMultiTerrain.gd" id="4_rbe4n"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" uid="uid://csinpqgk03ax4" path="res://blocky_game/blocks/blocks.gd" id="12"]
 [ext_resource type="NoiseTexture3D" uid="uid://c67xpff5rneoy" path="res://blocky_game/blocks/noise_texture_3d.tres" id="12_vmukk"]
 [ext_resource type="Script" uid="uid://bbfct6petonud" path="res://blocky_game/items/item_db.gd" id="13"]
+[ext_resource type="Script" uid="uid://cqsy2cuxfp57d" path="res://blocky_game/VoxelHighlightManager.gd" id="14_highlight"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_s4ggr"]
 ground_bottom_color = Color(0.64705884, 0.654902, 0.67058825, 1)
@@ -314,6 +315,10 @@ generator = SubResource("VoxelGeneratorNoise2D_ssdvb")
 mesher = SubResource("VoxelMesherBlocky_oycm1")
 gi_mode = 1
 generate_collisions = false
+
+[node name="VoxelHighlightManager" type="Node3D" parent="."]
+script = ExtResource("14_highlight")
+multi_terrain_path = NodePath("../VoxelMultiTerrain")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.97321, 0.172326, -0.152203, -0.0478236, 0.495785, 0.867127, 0.224888, 0.851176, -0.474262, 1.51966, 19.7004, 14.0879)
