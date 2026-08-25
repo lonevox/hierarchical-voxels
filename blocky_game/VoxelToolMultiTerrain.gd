@@ -30,8 +30,10 @@ func _init(multi_terrain: VoxelMultiTerrain) -> void:
 func is_area_editable(aabb: AABB) -> bool:
 	for terrain in multi_terrain.terrains:
 		var voxel_tool := voxel_tools[terrain]
-		aabb.position /= terrain.scale
-		if !voxel_tool.is_area_editable(aabb):
+		# VoxelTool expects terrain-local voxel coordinates. Transform a fresh AABB
+		# for each terrain so conversions do not accumulate between scales.
+		var terrain_aabb := terrain.global_transform.affine_inverse() * aabb
+		if !voxel_tool.is_area_editable(terrain_aabb):
 			return false
 	return true
 
