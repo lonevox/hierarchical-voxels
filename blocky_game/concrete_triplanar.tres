@@ -1,17 +1,8 @@
-[gd_resource type="StandardMaterial3D" load_steps=5 format=3 uid="uid://fj3rj2ik6ucq"]
-
-[ext_resource type="Texture2D" uid="uid://dne0brg3d0qw5" path="res://blocky_game/Poliigon_ConcreteFloorPoured_7656/1K/Poliigon_ConcreteFloorPoured_7656_BaseColor.jpg" id="1_lj026"]
-[ext_resource type="Texture2D" uid="uid://dlp7cd8j6fgf" path="res://blocky_game/Poliigon_ConcreteFloorPoured_7656/1K/Poliigon_ConcreteFloorPoured_7656_Metallic.jpg" id="2_n2i7o"]
-[ext_resource type="Texture2D" uid="uid://ctp0k2giqmwym" path="res://blocky_game/Poliigon_ConcreteFloorPoured_7656/1K/Poliigon_ConcreteFloorPoured_7656_Normal.png" id="3_fydk4"]
-[ext_resource type="Texture2D" uid="uid://dnccr6yl6b5t2" path="res://blocky_game/Poliigon_ConcreteFloorPoured_7656/1K/Poliigon_ConcreteFloorPoured_7656_Roughness.jpg" id="4_ltpgd"]
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://fj3rj2ik6ucq"]
 
 [resource]
-albedo_texture = ExtResource("1_lj026")
 metallic = 1.0
-metallic_texture = ExtResource("2_n2i7o")
-roughness_texture = ExtResource("4_ltpgd")
 normal_enabled = true
-normal_texture = ExtResource("3_fydk4")
 uv1_scale = Vector3(0.166, 0.166, 0.166)
 uv1_triplanar = true
 uv1_world_triplanar = true

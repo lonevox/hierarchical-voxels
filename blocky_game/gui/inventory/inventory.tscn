@@ -1,334 +1,167 @@
-[gd_scene load_steps=6 format=3 uid="uid://cg54toj1o7c2u"]
+[gd_scene format=3 uid="uid://cg54toj1o7c2u"]
 
-[ext_resource type="Script" path="res://blocky_game/gui/inventory/inventory.gd" id="1"]
+[ext_resource type="Script" uid="uid://834qg0dpcxif" path="res://blocky_game/gui/inventory/inventory.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://ctgybeqqsdjsc" path="res://blocky_game/gui/inventory/inventory_slot.tscn" id="2"]
-[ext_resource type="Script" path="res://blocky_game/gui/inventory_item_display.gd" id="3"]
-[ext_resource type="Script" path="res://blocky_game/gui/inventory/dragged_item_view.gd" id="4"]
+[ext_resource type="Script" uid="uid://c3h0l24xqstqd" path="res://blocky_game/gui/inventory_item_display.gd" id="3"]
+[ext_resource type="Script" uid="uid://cuo7jxvj6o3an" path="res://blocky_game/gui/inventory/dragged_item_view.gd" id="4"]
 [ext_resource type="Texture2D" uid="uid://cbrlpwyada727" path="res://blocky_game/blocks/dirt/dirt_sprite.png" id="5"]
 
-[node name="Inventory" type="ColorRect"]
+[node name="Inventory" type="ColorRect" unique_id=1849547465]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0, 0, 0.25098)
 script = ExtResource("1")
 
-[node name="CC" type="CenterContainer" parent="."]
+[node name="CC" type="CenterContainer" parent="." unique_id=1367295210]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="PC" type="PanelContainer" parent="CC"]
-offset_left = 208.0
-offset_top = 143.0
-offset_right = 816.0
-offset_bottom = 457.0
+[node name="PC" type="PanelContainer" parent="CC" unique_id=468646145]
+layout_mode = 2
 
-[node name="VB" type="VBoxContainer" parent="CC/PC"]
-offset_right = 608.0
-offset_bottom = 314.0
+[node name="VB" type="VBoxContainer" parent="CC/PC" unique_id=523013598]
+layout_mode = 2
 
-[node name="Label" type="Label" parent="CC/PC/VB"]
-offset_right = 608.0
-offset_bottom = 26.0
+[node name="Label" type="Label" parent="CC/PC/VB" unique_id=1504706958]
+layout_mode = 2
 text = "Inventory"
 
-[node name="HSeparator2" type="HSeparator" parent="CC/PC/VB"]
-offset_top = 30.0
-offset_right = 608.0
-offset_bottom = 34.0
+[node name="HSeparator2" type="HSeparator" parent="CC/PC/VB" unique_id=1523883617]
+layout_mode = 2
 
-[node name="Bag" type="GridContainer" parent="CC/PC/VB"]
-offset_top = 38.0
-offset_right = 608.0
-offset_bottom = 238.0
+[node name="Bag" type="GridContainer" parent="CC/PC/VB" unique_id=1887018893]
+layout_mode = 2
 columns = 9
 
-[node name="InventorySlot" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_right = 64.0
-offset_bottom = 64.0
+[node name="InventorySlot" parent="CC/PC/VB/Bag" unique_id=476870950 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot2" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 68.0
-offset_right = 132.0
-offset_bottom = 64.0
+[node name="InventorySlot2" parent="CC/PC/VB/Bag" unique_id=1814537073 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot3" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 136.0
-offset_right = 200.0
-offset_bottom = 64.0
+[node name="InventorySlot3" parent="CC/PC/VB/Bag" unique_id=1426432534 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot4" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 204.0
-offset_right = 268.0
-offset_bottom = 64.0
+[node name="InventorySlot4" parent="CC/PC/VB/Bag" unique_id=140747485 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot5" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 272.0
-offset_right = 336.0
-offset_bottom = 64.0
+[node name="InventorySlot5" parent="CC/PC/VB/Bag" unique_id=1930875210 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot6" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 340.0
-offset_right = 404.0
-offset_bottom = 64.0
+[node name="InventorySlot6" parent="CC/PC/VB/Bag" unique_id=1623010295 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot7" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 408.0
-offset_right = 472.0
-offset_bottom = 64.0
+[node name="InventorySlot7" parent="CC/PC/VB/Bag" unique_id=445731789 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot8" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 476.0
-offset_right = 540.0
-offset_bottom = 64.0
+[node name="InventorySlot8" parent="CC/PC/VB/Bag" unique_id=409331838 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot9" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 544.0
-offset_right = 608.0
-offset_bottom = 64.0
+[node name="InventorySlot9" parent="CC/PC/VB/Bag" unique_id=689628760 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot10" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_top = 68.0
-offset_right = 64.0
-offset_bottom = 132.0
+[node name="InventorySlot10" parent="CC/PC/VB/Bag" unique_id=837331920 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot11" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 68.0
-offset_top = 68.0
-offset_right = 132.0
-offset_bottom = 132.0
+[node name="InventorySlot11" parent="CC/PC/VB/Bag" unique_id=1375773860 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot12" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 136.0
-offset_top = 68.0
-offset_right = 200.0
-offset_bottom = 132.0
+[node name="InventorySlot12" parent="CC/PC/VB/Bag" unique_id=1937856802 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot13" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 204.0
-offset_top = 68.0
-offset_right = 268.0
-offset_bottom = 132.0
+[node name="InventorySlot13" parent="CC/PC/VB/Bag" unique_id=145876387 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot14" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 272.0
-offset_top = 68.0
-offset_right = 336.0
-offset_bottom = 132.0
+[node name="InventorySlot14" parent="CC/PC/VB/Bag" unique_id=1451793109 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot15" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 340.0
-offset_top = 68.0
-offset_right = 404.0
-offset_bottom = 132.0
+[node name="InventorySlot15" parent="CC/PC/VB/Bag" unique_id=377377818 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot16" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 408.0
-offset_top = 68.0
-offset_right = 472.0
-offset_bottom = 132.0
+[node name="InventorySlot16" parent="CC/PC/VB/Bag" unique_id=1039228198 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot17" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 476.0
-offset_top = 68.0
-offset_right = 540.0
-offset_bottom = 132.0
+[node name="InventorySlot17" parent="CC/PC/VB/Bag" unique_id=461133640 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot18" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 544.0
-offset_top = 68.0
-offset_right = 608.0
-offset_bottom = 132.0
+[node name="InventorySlot18" parent="CC/PC/VB/Bag" unique_id=933743981 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot19" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_top = 136.0
-offset_right = 64.0
-offset_bottom = 200.0
+[node name="InventorySlot19" parent="CC/PC/VB/Bag" unique_id=2013642581 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot20" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 68.0
-offset_top = 136.0
-offset_right = 132.0
-offset_bottom = 200.0
+[node name="InventorySlot20" parent="CC/PC/VB/Bag" unique_id=729349290 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot21" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 136.0
-offset_top = 136.0
-offset_right = 200.0
-offset_bottom = 200.0
+[node name="InventorySlot21" parent="CC/PC/VB/Bag" unique_id=318225668 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot22" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 204.0
-offset_top = 136.0
-offset_right = 268.0
-offset_bottom = 200.0
+[node name="InventorySlot22" parent="CC/PC/VB/Bag" unique_id=90953375 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot23" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 272.0
-offset_top = 136.0
-offset_right = 336.0
-offset_bottom = 200.0
+[node name="InventorySlot23" parent="CC/PC/VB/Bag" unique_id=569623007 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot24" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 340.0
-offset_top = 136.0
-offset_right = 404.0
-offset_bottom = 200.0
+[node name="InventorySlot24" parent="CC/PC/VB/Bag" unique_id=264924333 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot25" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 408.0
-offset_top = 136.0
-offset_right = 472.0
-offset_bottom = 200.0
+[node name="InventorySlot25" parent="CC/PC/VB/Bag" unique_id=493128498 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot26" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 476.0
-offset_top = 136.0
-offset_right = 540.0
-offset_bottom = 200.0
+[node name="InventorySlot26" parent="CC/PC/VB/Bag" unique_id=718573062 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot27" parent="CC/PC/VB/Bag" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 544.0
-offset_top = 136.0
-offset_right = 608.0
-offset_bottom = 200.0
+[node name="InventorySlot27" parent="CC/PC/VB/Bag" unique_id=912429360 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="HSeparator" type="HSeparator" parent="CC/PC/VB"]
-offset_top = 242.0
-offset_right = 608.0
-offset_bottom = 246.0
+[node name="HSeparator" type="HSeparator" parent="CC/PC/VB" unique_id=1862673738]
+layout_mode = 2
 
-[node name="Hotbar" type="HBoxContainer" parent="CC/PC/VB"]
-offset_top = 250.0
-offset_right = 608.0
-offset_bottom = 314.0
+[node name="Hotbar" type="HBoxContainer" parent="CC/PC/VB" unique_id=1240957417]
+layout_mode = 2
 
-[node name="InventorySlot" parent="CC/PC/VB/Hotbar" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_right = 64.0
-offset_bottom = 64.0
+[node name="InventorySlot" parent="CC/PC/VB/Hotbar" unique_id=1864099921 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot2" parent="CC/PC/VB/Hotbar" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 68.0
-offset_right = 132.0
-offset_bottom = 64.0
+[node name="InventorySlot2" parent="CC/PC/VB/Hotbar" unique_id=1486043409 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot3" parent="CC/PC/VB/Hotbar" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 136.0
-offset_right = 200.0
-offset_bottom = 64.0
+[node name="InventorySlot3" parent="CC/PC/VB/Hotbar" unique_id=1981523787 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot4" parent="CC/PC/VB/Hotbar" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 204.0
-offset_right = 268.0
-offset_bottom = 64.0
+[node name="InventorySlot4" parent="CC/PC/VB/Hotbar" unique_id=1905684674 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot5" parent="CC/PC/VB/Hotbar" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 272.0
-offset_right = 336.0
-offset_bottom = 64.0
+[node name="InventorySlot5" parent="CC/PC/VB/Hotbar" unique_id=659440297 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot6" parent="CC/PC/VB/Hotbar" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 340.0
-offset_right = 404.0
-offset_bottom = 64.0
+[node name="InventorySlot6" parent="CC/PC/VB/Hotbar" unique_id=131878891 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot7" parent="CC/PC/VB/Hotbar" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 408.0
-offset_right = 472.0
-offset_bottom = 64.0
+[node name="InventorySlot7" parent="CC/PC/VB/Hotbar" unique_id=565630409 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot8" parent="CC/PC/VB/Hotbar" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 476.0
-offset_right = 540.0
-offset_bottom = 64.0
+[node name="InventorySlot8" parent="CC/PC/VB/Hotbar" unique_id=254151847 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="InventorySlot9" parent="CC/PC/VB/Hotbar" instance=ExtResource("2")]
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 544.0
-offset_right = 608.0
-offset_bottom = 64.0
+[node name="InventorySlot9" parent="CC/PC/VB/Hotbar" unique_id=262186487 instance=ExtResource("2")]
+layout_mode = 2
 
-[node name="DraggedItem" type="Control" parent="."]
+[node name="DraggedItem" type="Control" parent="." unique_id=1087505544]
 visible = false
 custom_minimum_size = Vector2(64, 64)
+anchors_preset = 0
 mouse_filter = 2
 script = ExtResource("4")
 
-[node name="TextureRect" type="TextureRect" parent="DraggedItem"]
+[node name="TextureRect" type="TextureRect" parent="DraggedItem" unique_id=166562261]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 texture = ExtResource("5")
-ignore_texture_size = true
+expand_mode = 1
 stretch_mode = 4
 script = ExtResource("3")

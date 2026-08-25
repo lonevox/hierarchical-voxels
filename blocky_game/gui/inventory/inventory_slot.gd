@@ -29,4 +29,3 @@ func _notification(what: int):
 
 func get_display() -> InventoryItemDisplay:
 	return _display
-

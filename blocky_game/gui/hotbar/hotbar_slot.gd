@@ -6,5 +6,3 @@ extends Control
 
 func get_display():
 	return _display
-
-

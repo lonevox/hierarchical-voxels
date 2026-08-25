@@ -1,15 +1,15 @@
-[gd_scene load_steps=3 format=3 uid="uid://dljqckrx50m8t"]
+[gd_scene format=3 uid="uid://dljqckrx50m8t"]
 
 [ext_resource type="Script" uid="uid://56wh1uor5u2x" path="res://common/mouse_look.gd" id="1"]
 [ext_resource type="Script" uid="uid://bkcl404ktxub1" path="res://common/spectator_avatar.gd" id="2"]
 
-[node name="SpectatorAvatar" type="Node3D"]
+[node name="SpectatorAvatar" type="Node3D" unique_id=1179732622]
 script = ExtResource("2")
 speed = 5.0
 
-[node name="Camera" type="Camera3D" parent="."]
+[node name="Camera" type="Camera3D" parent="." unique_id=167946242]
 script = ExtResource("1")
 sensitivity = 0.2
 distance = 0.0
 
-[node name="VoxelViewer" type="VoxelViewer" parent="."]
+[node name="VoxelViewer" type="VoxelViewer" parent="." unique_id=1438117333]

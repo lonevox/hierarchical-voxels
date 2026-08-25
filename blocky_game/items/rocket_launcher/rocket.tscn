@@ -1,17 +1,16 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene format=3 uid="uid://dtbl435cy05we"]
 
-[ext_resource path="res://blocky_game/items/rocket_launcher/rocket.gd" type="Script" id=1]
+[ext_resource type="Script" uid="uid://c8pknbl5cdq83" path="res://blocky_game/items/rocket_launcher/rocket.gd" id="1"]
 
-[sub_resource type="CylinderMesh" id=1]
+[sub_resource type="CylinderMesh" id="1"]
 top_radius = 0.1
 bottom_radius = 0.3
 height = 1.0
 radial_segments = 8
 
-[node name="Rocket" type="Node3D"]
-script = ExtResource( 1 )
+[node name="Rocket" type="Node3D" unique_id=1587899929]
+script = ExtResource("1")
 
-[node name="MeshInstance" type="MeshInstance3D" parent="."]
-transform = Transform( -1, -3.25841e-07, 5.30863e-14, 0, -1.62921e-07, -1, 3.25841e-07, -1, 1.62921e-07, 0, 0, 0 )
-mesh = SubResource( 1 )
-material/0 = null
+[node name="MeshInstance" type="MeshInstance3D" parent="." unique_id=1544020061]
+transform = Transform3D(-1, -3.25841e-07, 5.30863e-14, 0, -1.62921e-07, -1, 3.25841e-07, -1, 1.62921e-07, 0, 0, 0)
+mesh = SubResource("1")

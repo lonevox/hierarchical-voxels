@@ -1,4 +1,4 @@
-[gd_resource type="VoxelBlockyLibrary" load_steps=5 format=3 uid="uid://cs1bqe5vsvfls"]
+[gd_resource type="VoxelBlockyLibrary" format=3 uid="uid://cs1bqe5vsvfls"]
 
 [ext_resource type="Material" uid="uid://bi254884ikj8v" path="res://blocky_terrain/terrain_material.tres" id="1_tnvpt"]
 

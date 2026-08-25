@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://n8k7camqxnwg"]
+[gd_scene format=3 uid="uid://n8k7camqxnwg"]
 
 [ext_resource type="Script" uid="uid://c8tq7wmpsbfrj" path="res://VoxelTerrain.gd" id="1_a202f"]
 [ext_resource type="Script" uid="uid://y1hcj8axrk41" path="res://free_look_camera.gd" id="1_noarx"]
@@ -28,25 +28,25 @@ sky_material = SubResource("ProceduralSkyMaterial_a202f")
 background_mode = 2
 sky = SubResource("Sky_noarx")
 
-[node name="Node3D" type="Node3D"]
+[node name="Node3D" type="Node3D" unique_id=1122655220]
 
-[node name="Camera3D" type="Camera3D" parent="."]
+[node name="Camera3D" type="Camera3D" parent="." unique_id=768740207]
 transform = Transform3D(1, 0, 0, 0, 0.525308, 0.850912, 0, -0.850912, 0.525308, 0, 6.09484, 2.84321)
 current = true
 far = 10000.0
 script = ExtResource("1_noarx")
 
-[node name="VoxelTerrain" type="VoxelTerrain" parent="."]
+[node name="VoxelTerrain" type="VoxelTerrain" parent="." unique_id=77031059]
 generator = SubResource("VoxelGeneratorWaves_noarx")
 mesher = SubResource("VoxelMesherBlocky_jka67")
 material_override = SubResource("StandardMaterial3D_noarx")
 script = ExtResource("1_a202f")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=399078664]
 transform = Transform3D(1, 0, 0, 0, 0.50653, 0.862222, 0, -0.862222, 0.50653, 0, 0, 0)
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1267257797]
 environment = SubResource("Environment_a0tk4")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="."]
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=1310090662]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.61493)

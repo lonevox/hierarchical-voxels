@@ -1,4 +1,4 @@
-[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://cl8ftl3f0exim"]
+[gd_resource type="ShaderMaterial" format=3 uid="uid://cl8ftl3f0exim"]
 
 [ext_resource type="Shader" uid="uid://bgyq03qj0dwex" path="res://blocky_game/blocks/voxel_scale.gdshader" id="1_8ekxf"]
 [ext_resource type="Texture2D" uid="uid://bxo4bsw3yg42b" path="res://blocky_game/blocks/terrain.png" id="2_ekaoc"]
