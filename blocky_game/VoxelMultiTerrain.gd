@@ -3,6 +3,10 @@ class_name VoxelMultiTerrain
 
 
 const VOXEL_SCALE_SHADER_MATERIAL = preload("uid://cl8ftl3f0exim")
+## This is the separation applied by VoxelBoxMover in terrain-local coordinates,
+## visible as `EPSILON` in the Godot Voxel source here:
+## https://github.com/Zylann/godot_voxel/blob/e74312304c2f9112728307aa7a778a8a44b5b9e5/terrain/fixed_lod/voxel_box_mover.cpp#L61
+const _BOX_MOVER_COLLISION_MARGIN := 0.001
 
 ## The max view distance of all terrains. See VoxelTerrain.max_view_distance.
 @export_range(0, 512) var max_view_diatance := 128:
@@ -49,19 +53,39 @@ func get_voxel_tool() -> VoxelToolMultiTerrain:
 	return VoxelToolMultiTerrain.new(self)
 
 
-# TODO: When touching voxels from two different terrains at once, clipping can happen. Needs fixing.
 ## Get box mover motion taking into account all terrains.
 func get_box_mover_motion(pos: Vector3, motion: Vector3, aabb: AABB) -> BoxMoverMotion:
-	var total_motion := Vector3.INF
+	var total_motion := motion
 	var has_stepped_up := false
-	for terrain in terrains:
-		var box_mover_motion := _box_mover.get_motion(pos, motion, aabb, terrain)
-		if terrain == terrains[0] && _box_mover.has_stepped_up():
-			# Step up only on the smallest terrain
-			has_stepped_up = true
-		if abs(total_motion) > abs(box_mover_motion):
-			total_motion = box_mover_motion
+	var step_climbing_enabled := _box_mover.is_step_climbing_enabled()
+	# A collision on one terrain can change the path relative to another terrain,
+	# so repeat until every terrain accepts the combined result.
+	for _pass in terrains.size():
+		var previous_motion := total_motion
+		for terrain_index in terrains.size():
+			# Larger voxels cannot be climbed as a half-voxel step.
+			_box_mover.set_step_climbing_enabled(
+				step_climbing_enabled && terrain_index == 0)
+			total_motion = _box_mover.get_motion(
+				pos, total_motion, aabb, terrains[terrain_index])
+			if terrain_index == 0 && _box_mover.has_stepped_up():
+				has_stepped_up = true
+		if total_motion.is_equal_approx(previous_motion):
+			break
+	_box_mover.set_step_climbing_enabled(step_climbing_enabled)
 	return BoxMoverMotion.new(total_motion, has_stepped_up)
+
+
+## Returns whether the box has terrain directly beneath it.
+## The probe accounts for VoxelBoxMover's collision margin growing with terrain scale.
+func is_box_mover_on_floor(pos: Vector3, aabb: AABB) -> bool:
+	for terrain in terrains:
+		var world_margin := _BOX_MOVER_COLLISION_MARGIN * terrain.global_transform.basis.y.length()
+		var probe_motion := Vector3.DOWN * world_margin * 2.0
+		var resolved_motion := _box_mover.get_motion(pos, probe_motion, aabb, terrain)
+		if resolved_motion.y > probe_motion.y and !is_equal_approx(resolved_motion.y, probe_motion.y):
+			return true
+	return false
 
 
 class BoxMoverMotion:

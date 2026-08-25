@@ -75,25 +75,47 @@ func _physics_process(delta: float):
 		wait_for_load = true
 	
 	if !wait_for_load:
+		# VoxelBoxMover separates bodies from voxels by a margin in terrain-local
+		# coordinates. At larger terrain scales gravity can be smaller than the
+		# resulting world-space gap, causing the player to jitter up and down,
+		# so don't apply gravity while on the floor.
+		if !_flying and _grounded:
+			if multi_terrain.is_box_mover_on_floor(position, aabb):
+				_velocity.y = 0
+				motion.y = 0
+			else:
+				_grounded = false
+
 		var prev_motion := motion
 
 		# Modify motion taking collisions into account
 		var box_mover_motion := multi_terrain.get_box_mover_motion(position, motion, aabb)
 		motion = box_mover_motion.motion
 		DDD.set_text("Motion", motion)
+		var landed := (
+			!_flying
+			and prev_motion.y < 0
+			and motion.y > prev_motion.y
+			and !is_equal_approx(motion.y, prev_motion.y)
+		)
+		# The collision margin can produce a small upward correction on contact.
+		# Remaining at the current height is enough when approaching from above.
+		if landed and motion.y > 0:
+			motion.y = 0
 
 		# Apply motion with a raw translation.
 		global_translate(motion)
 
-		# If new motion doesnt move vertically and we were falling before, we just landed
-		if !_flying and absf(motion.y) < 0.001 and prev_motion.y < -0.001:
+		# A downward motion constrained by terrain means we just landed. Apply any
+		# downward distance needed to reach the surface, but don't retain it as velocity.
+		if landed:
 			_grounded = true
-
-		if !_flying and box_mover_motion.has_stepped_up:
-			# When we step up, the motion vector will have vertical movement,
-			# however it is not caused by falling or jumping, but by snapping the body on
-			# top of the step. So after we applied motion, we consider it grounded,
-			# and we reset motion.y so we don't induce a "jump" velocity later.
+			motion.y = 0
+		elif !_flying and box_mover_motion.has_stepped_up:
+			# When we step up, the motion vector will have vertical movement due
+			# to snapping the body on top of the step. So after we applied motion,
+			# we consider it grounded, and we reset motion.y so we don't induce
+			# a "jump" velocity in the next physics step.
 			motion.y = 0
 			_grounded = true
 		# Otherwise, if new motion is moving vertically, we may not be grounded anymore
