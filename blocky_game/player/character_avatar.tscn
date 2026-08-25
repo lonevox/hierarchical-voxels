@@ -8,6 +8,9 @@
 [ext_resource type="PackedScene" uid="uid://bm2v4asqyh6a" path="res://blocky_game/player/character_visual.tscn" id="6_peahy"]
 [ext_resource type="PackedScene" uid="uid://cg54toj1o7c2u" path="res://blocky_game/gui/inventory/inventory.tscn" id="7"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nco1x"]
+shading_mode = 0
+
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_vop3k"]
 emission_shape = 3
 emission_box_extents = Vector3(15, 0.5, 15)
@@ -55,6 +58,7 @@ sensitivity = 0.3
 
 [node name="Interaction" type="Node" parent="." unique_id=1448429816]
 script = ExtResource("3")
+cursor_material = SubResource("StandardMaterial3D_nco1x")
 
 [node name="OmniLight" type="OmniLight3D" parent="." unique_id=318391119]
 visible = false

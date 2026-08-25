@@ -12,6 +12,11 @@ const COLLISION_LAYER_AVATAR = 2
 const SERVER_PEER_ID = 1
 const BASE_RAYCAST_MAX_DISTANCE = 16.0
 
+# These timings are used for voxel placement errors.
+const ERROR_FADE_IN_DURATION := 0.1;
+const ERROR_HOLD_DURATION := 0.5;
+const ERROR_FADE_OUT_DURATION := 0.3;
+
 const _hotbar_keys = {
 	KEY_1: 0,
 	KEY_2: 1,
@@ -52,7 +57,8 @@ func _ready():
 	mesh_instance.mesh = mesh
 	if cursor_material != null:
 		mesh_instance.material_override = cursor_material
-	mesh_instance.set_scale(Vector3.ONE * 1.01)
+	mesh_instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mesh_instance.scale = Vector3.ONE * 0.95
 	_cursor = mesh_instance
 	_multi_terrain.add_child(_cursor)
 
@@ -88,7 +94,7 @@ func _physics_process(_delta):
 		var placement_terrain := _multi_terrain.terrains[placement_terrain_index]
 		_cursor.show()
 		_cursor.position = hit.global_previous_position[placement_terrain_index]
-		_cursor.scale = Vector3.ONE * placement_terrain.scale.x * 1.01
+		_cursor.scale = Vector3.ONE * placement_terrain.scale.x * 0.95
 		DDD.set_text("Global pointed voxel", str(hit.global_position))
 		DDD.set_text("Pointed voxel", str(hit.raycast_result.position))
 		DDD.set_text("Global dist", str(hit.global_distance))
@@ -124,9 +130,15 @@ func _physics_process(_delta):
 				if not _voxel_tool.has_voxels_in_area(global_pos, placement_size):
 					_place_single_block(placement_terrain_index, pos, inv_item.id)
 				else:
+					# Render voxel errors
 					var placement_collisions := _voxel_tool.get_voxels_in_area(global_pos, placement_size)
 					_error_highlight.set_voxels(placement_collisions)
-					_error_highlight.flash(Color.RED, 0.1, 0.5, 0.3)
+					_error_highlight.flash(Color.RED, ERROR_FADE_IN_DURATION, ERROR_HOLD_DURATION, ERROR_FADE_OUT_DURATION)
+					# Flash the cursor red
+					var tween := create_tween()
+					tween.tween_property(_cursor.material_override, "albedo_color", Color.RED, ERROR_FADE_IN_DURATION)
+					tween.tween_interval(ERROR_HOLD_DURATION)
+					tween.tween_property(_cursor.material_override, "albedo_color", Color.WHITE, ERROR_FADE_OUT_DURATION)
 	
 	elif inv_item.type == InventoryItem.TYPE_ITEM:
 		if _action_use:
