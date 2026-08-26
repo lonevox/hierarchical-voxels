@@ -13,26 +13,31 @@
 [ext_resource type="NoiseTexture3D" uid="uid://c67xpff5rneoy" path="res://blocky_game/blocks/noise_texture_3d.tres" id="12_vmukk"]
 [ext_resource type="Script" uid="uid://bbfct6petonud" path="res://blocky_game/items/item_db.gd" id="13"]
 [ext_resource type="Script" uid="uid://cqsy2cuxfp57d" path="res://blocky_game/VoxelHighlightManager.gd" id="14_highlight"]
+[ext_resource type="Script" uid="uid://88cgk7p5dxno" path="res://blocky_game/gui/radial_menu.gd" id="15_iihdp"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_s4ggr"]
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_x2ref"]
 ground_bottom_color = Color(0.64705884, 0.654902, 0.67058825, 1)
-energy_multiplier = 1.5
 
-[sub_resource type="Sky" id="Sky_403h4"]
-sky_material = SubResource("ProceduralSkyMaterial_s4ggr")
+[sub_resource type="Sky" id="Sky_iihdp"]
+sky_material = SubResource("ProceduralSkyMaterial_x2ref")
 
-[sub_resource type="Environment" id="2"]
-sky = SubResource("Sky_403h4")
-ambient_light_sky_contribution = 0.1
-ambient_light_energy = 0.0
+[sub_resource type="Environment" id="Environment_d300o"]
+background_mode = 2
+sky = SubResource("Sky_iihdp")
+ambient_light_source = 3
+ambient_light_sky_contribution = 0.3
 tonemap_mode = 4
 ssao_enabled = true
 ssao_intensity = 3.0
 sdfgi_use_occlusion = true
+glow_intensity = 1.5
 glow_hdr_threshold = 0.5
 fog_enabled = true
+fog_sun_scatter = 0.2
 fog_density = 0.0002
-volumetric_fog_density = 0.0
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.001
+volumetric_fog_anisotropy = 0.9
 adjustment_enabled = true
 adjustment_contrast = 1.1
 adjustment_saturation = 0.8
@@ -120,27 +125,27 @@ occlusion_darkness = 0.9
 library = ExtResource("6_bxxj4")
 occlusion_darkness = 0.9
 
-[sub_resource type="Curve" id="Curve_rbe4n"]
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.6814159, 0.286215), 0.0, 0.0, 0, 0, Vector2(0.6843658, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
-point_count = 4
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_bxxj4"]
-seed = 1
-frequency = 0.001
-fractal_type = 3
-domain_warp_frequency = 0.005
-
-[sub_resource type="VoxelGeneratorNoise2D" id="VoxelGeneratorNoise2D_ssdvb"]
-channel = 0
-height_start = -75.0
-noise = SubResource("FastNoiseLite_bxxj4")
-curve = SubResource("Curve_rbe4n")
+[sub_resource type="VoxelStreamMemory" id="VoxelStreamMemory_d300o"]
 
 [sub_resource type="VoxelMesherBlocky" id="VoxelMesherBlocky_oycm1"]
 library = ExtResource("6_bxxj4")
 occlusion_darkness = 0.9
 
-[sub_resource type="VoxelStreamMemory" id="VoxelStreamMemory_iihdp"]
+[sub_resource type="Curve" id="Curve_x2ref"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.6814159, 0.286215), 0.0, 0.0, 0, 0, Vector2(0.6843658, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_iihdp"]
+seed = 1
+frequency = 0.001
+fractal_type = 3
+domain_warp_frequency = 0.005
+
+[sub_resource type="VoxelGeneratorNoise2D" id="VoxelGeneratorNoise2D_d300o"]
+channel = 0
+height_start = -75.0
+noise = SubResource("FastNoiseLite_iihdp")
+curve = SubResource("Curve_x2ref")
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_880mh"]
 _surfaces = [{
@@ -222,7 +227,7 @@ script = ExtResource("5")
 [node name="Settings" type="Node" parent="." unique_id=219093037]
 unique_name_in_owner = true
 script = ExtResource("2_vmukk")
-view_distance = 8
+view_distance = 5
 
 [node name="Blocks" type="Node" parent="." unique_id=870048673]
 script = ExtResource("12")
@@ -231,7 +236,7 @@ script = ExtResource("12")
 script = ExtResource("13")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=521229753]
-environment = SubResource("2")
+environment = SubResource("Environment_d300o")
 
 [node name="VoxelMultiTerrain" type="Node3D" parent="." unique_id=407146468]
 script = ExtResource("4_rbe4n")
@@ -283,14 +288,14 @@ generate_collisions = false
 
 [node name="VoxelTerrain7" type="VoxelTerrain" parent="VoxelMultiTerrain" unique_id=745328714]
 transform = Transform3D(64, 0, 0, 0, 64, 0, 0, 0, 64, 0, 0, 0)
-generator = SubResource("VoxelGeneratorNoise2D_ssdvb")
+stream = SubResource("VoxelStreamMemory_d300o")
 mesher = SubResource("VoxelMesherBlocky_oycm1")
 gi_mode = 1
 generate_collisions = false
 
 [node name="VoxelTerrain8" type="VoxelTerrain" parent="VoxelMultiTerrain" unique_id=729923084]
 transform = Transform3D(128, 0, 0, 0, 128, 0, 0, 0, 128, 0, 0, 0)
-stream = SubResource("VoxelStreamMemory_iihdp")
+generator = SubResource("VoxelGeneratorNoise2D_d300o")
 mesher = SubResource("VoxelMesherBlocky_oycm1")
 gi_mode = 1
 generate_collisions = false
@@ -300,8 +305,7 @@ script = ExtResource("14_highlight")
 multi_terrain_path = NodePath("../VoxelMultiTerrain")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1413497729]
-transform = Transform3D(-0.97321, 0.172326, -0.152203, -0.0478236, 0.495785, 0.867127, 0.224888, 0.851176, -0.474262, 1.51966, 19.7004, 14.0879)
-visible = false
+transform = Transform3D(-0.9731453, 0.17252864, -0.15238532, -0.04777791, 0.4961927, 0.8668965, 0.22517702, 0.8508973, -0.47462463, 1.51966, 19.7004, 14.0879)
 shadow_enabled = true
 directional_shadow_mode = 0
 directional_shadow_fade_start = 0.85
@@ -344,3 +348,9 @@ material = SubResource("ORMMaterial3D_vmukk")
 light_energy = 16.0
 omni_range = 12.0
 omni_attenuation = 1.5
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1388497922]
+
+[node name="RadialMenu" type="Node2D" parent="CanvasLayer" unique_id=884753003]
+script = ExtResource("15_iihdp")
+metadata/_custom_type_script = "uid://88cgk7p5dxno"

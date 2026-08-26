@@ -110,6 +110,7 @@ view_distance = 16384
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="." unique_id=2095515027]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20, 0)
+emitting = false
 amount = 5000
 lifetime = 1.5
 randomness = 0.5
