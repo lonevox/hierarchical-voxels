@@ -11,6 +11,7 @@ const InteractionCommon = preload("./interaction_common.gd")
 const COLLISION_LAYER_AVATAR = 2
 const SERVER_PEER_ID = 1
 const BASE_RAYCAST_MAX_DISTANCE = 16.0
+const CURSOR_SCALE = 0.95
 
 # These timings are used for voxel placement errors.
 const ERROR_FADE_IN_DURATION := 0.1;
@@ -58,7 +59,7 @@ func _ready():
 	if cursor_material != null:
 		mesh_instance.material_override = cursor_material
 	mesh_instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	mesh_instance.scale = Vector3.ONE * 0.95
+	mesh_instance.scale = Vector3.ONE * CURSOR_SCALE
 	_cursor = mesh_instance
 	_multi_terrain.add_child(_cursor)
 
@@ -92,9 +93,14 @@ func _physics_process(_delta):
 	if hit != null:
 		var placement_terrain_index := _placement_scale - 1
 		var placement_terrain := _multi_terrain.terrains[placement_terrain_index]
+		var voxel_size := placement_terrain.scale.x
+		var cursor_size := voxel_size * CURSOR_SCALE
+		# This offset is used to center the cursor on the voxel, since the cursor's origin
+		# is on its corner so when its scaled it needs to be moved.
+		var cursor_offset := Vector3.ONE * (voxel_size - cursor_size) * 0.5
 		_cursor.show()
-		_cursor.position = hit.global_previous_position[placement_terrain_index]
-		_cursor.scale = Vector3.ONE * placement_terrain.scale.x * 0.95
+		_cursor.position = Vector3(hit.global_previous_position[placement_terrain_index]) + cursor_offset
+		_cursor.scale = Vector3.ONE * cursor_size
 		DDD.set_text("Global pointed voxel", str(hit.global_position))
 		DDD.set_text("Pointed voxel", str(hit.raycast_result.position))
 		DDD.set_text("Global dist", str(hit.global_distance))
