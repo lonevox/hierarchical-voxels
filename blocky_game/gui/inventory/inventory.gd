@@ -15,7 +15,6 @@ const InventoryItem = preload("../../player/inventory_item.gd")
 # TODO Is it worth having the hotbar in the first indexes instead of the last ones?
 var _slots := []
 var _slot_views := []
-var _previous_mouse_mode := 0
 var _dragged_slot := -1
 
 
@@ -74,14 +73,12 @@ func get_hotbar_slot_data(i) -> InventoryItem:
 	return _slots[hotbar_begin_index + i]
 
 
-func _unhandled_input(event):
-	if event is InputEventKey:
-		if event.pressed:
-			if event.keycode == KEY_E:
-				visible = not visible
-			elif visible and event.keycode == KEY_ESCAPE:
-				visible = false
-				get_viewport().set_input_as_handled()
+func open_inventory() -> void:
+	visible = true
+
+
+func close_inventory() -> void:
+	visible = false
 
 
 func _notification(what: int):
@@ -92,10 +89,7 @@ func _notification(what: int):
 
 		if visible:
 			_update_views()
-			
-			_previous_mouse_mode = Input.get_mouse_mode()
-			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-			
+
 		else:
 			if _dragged_slot != -1:
 				# Cancel drag
@@ -103,8 +97,6 @@ func _notification(what: int):
 				_dragged_item_view.stop()
 			_dragged_slot = -1
 			_dragged_item_view.stop()
-			
-			Input.set_mouse_mode(_previous_mouse_mode)
 
 
 func _on_slot_pressed(idx: int):

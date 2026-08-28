@@ -7,9 +7,98 @@
 [ext_resource type="PackedScene" uid="uid://bv2c3jwi46pfg" path="res://blocky_game/gui/hotbar/hotbar.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://bm2v4asqyh6a" path="res://blocky_game/player/character_visual.tscn" id="6_peahy"]
 [ext_resource type="PackedScene" uid="uid://cg54toj1o7c2u" path="res://blocky_game/gui/inventory/inventory.tscn" id="7"]
+[ext_resource type="Script" uid="uid://nlc6n2ehlntw" path="res://blocky_game/gui/hud.gd" id="8_hud"]
+[ext_resource type="Script" uid="uid://88cgk7p5dxno" path="res://blocky_game/gui/radial_menu.gd" id="9_radial"]
+[ext_resource type="Script" uid="uid://dw7yjhsy5iq2j" path="res://blocky_game/gui/radial_menu_option.gd" id="10_nco1x"]
+[ext_resource type="Texture2D" uid="uid://c4qaphqjslhv6" path="res://icon.svg" id="11_d42li"]
+[ext_resource type="Texture2D" uid="uid://ceqay6m4yrspi" path="res://blocky_game/gui/placement_radial_menu/voxel.png" id="11_ht6ad"]
+[ext_resource type="Texture2D" uid="uid://cf1sf3x7appmw" path="res://blocky_game/gui/placement_radial_menu/line.png" id="12_hi1jy"]
+[ext_resource type="Texture2D" uid="uid://d0vab5ko712tx" path="res://blocky_game/gui/placement_radial_menu/wall.png" id="13_b4yc5"]
+[ext_resource type="Texture2D" uid="uid://b2q4km1snhuhm" path="res://blocky_game/gui/placement_radial_menu/floor.png" id="14_i6kwp"]
+[ext_resource type="Texture2D" uid="uid://cynjoy7xtjsgf" path="res://blocky_game/gui/placement_radial_menu/cuboid.png" id="15_pdpuk"]
+[ext_resource type="Texture2D" uid="uid://fh85wnuelsp0" path="res://blocky_game/gui/placement_radial_menu/circle.png" id="16_6k2xd"]
+[ext_resource type="Texture2D" uid="uid://ds8mm0d4uqu81" path="res://blocky_game/gui/placement_radial_menu/cylinder.png" id="17_fe47t"]
+[ext_resource type="Texture2D" uid="uid://0tvebc0fphdg" path="res://blocky_game/gui/placement_radial_menu/sphere.png" id="18_2cg4b"]
+[ext_resource type="Texture2D" uid="uid://b8hmqff3rddvp" path="res://blocky_game/gui/placement_radial_menu/pyramid.png" id="19_1txeb"]
+[ext_resource type="Texture2D" uid="uid://jk403ypgyaqw" path="res://blocky_game/gui/placement_radial_menu/cone.png" id="20_qqe0j"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nco1x"]
 shading_mode = 0
+
+[sub_resource type="LabelSettings" id="LabelSettings_b4yc5"]
+font_size = 20
+
+[sub_resource type="Resource" id="Resource_hi1jy"]
+script = ExtResource("10_nco1x")
+name = "Voxel"
+texture = ExtResource("11_ht6ad")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_dogem"]
+script = ExtResource("10_nco1x")
+name = "Line"
+texture = ExtResource("12_hi1jy")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_d42li"]
+script = ExtResource("10_nco1x")
+name = "Wall"
+texture = ExtResource("13_b4yc5")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_g305u"]
+script = ExtResource("10_nco1x")
+name = "Floor"
+texture = ExtResource("14_i6kwp")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_l5xdn"]
+script = ExtResource("10_nco1x")
+name = "Cuboid"
+texture = ExtResource("15_pdpuk")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_uqlli"]
+script = ExtResource("10_nco1x")
+name = "Circle"
+texture = ExtResource("16_6k2xd")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_kusfd"]
+script = ExtResource("10_nco1x")
+name = "Cylinder"
+texture = ExtResource("17_fe47t")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_dbmlm"]
+script = ExtResource("10_nco1x")
+name = "Sphere"
+texture = ExtResource("18_2cg4b")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_1mpnw"]
+script = ExtResource("10_nco1x")
+name = "Pyramid"
+texture = ExtResource("19_1txeb")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_hpcoq"]
+script = ExtResource("10_nco1x")
+name = "Cone"
+texture = ExtResource("20_qqe0j")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_pprs5"]
+script = ExtResource("10_nco1x")
+name = "Slope"
+texture = ExtResource("11_d42li")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_rgfua"]
+script = ExtResource("10_nco1x")
+name = "Sloped Pyramid"
+texture = ExtResource("11_d42li")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_vop3k"]
 emission_shape = 3
@@ -77,8 +166,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+script = ExtResource("8_hud")
 
-[node name="CenterContainer" type="CenterContainer" parent="HUD" unique_id=1382980769]
+[node name="Crosshair" type="CenterContainer" parent="HUD" unique_id=1382980769]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -87,7 +177,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="TextureRect" type="TextureRect" parent="HUD/CenterContainer" unique_id=1368919509]
+[node name="TextureRect" type="TextureRect" parent="HUD/Crosshair" unique_id=1368919509]
 layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("4")
@@ -104,6 +194,13 @@ layout_mode = 1
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.501961)
+
+[node name="RadialMenu" type="Node2D" parent="HUD" unique_id=230408935]
+script = ExtResource("9_radial")
+label_settings = SubResource("LabelSettings_b4yc5")
+center_option = SubResource("Resource_hi1jy")
+options = Array[ExtResource("10_nco1x")]([SubResource("Resource_dogem"), SubResource("Resource_d42li"), SubResource("Resource_g305u"), SubResource("Resource_l5xdn"), SubResource("Resource_uqlli"), SubResource("Resource_kusfd"), SubResource("Resource_dbmlm"), SubResource("Resource_1mpnw"), SubResource("Resource_hpcoq"), SubResource("Resource_pprs5"), SubResource("Resource_rgfua")])
+metadata/_custom_type_script = "uid://88cgk7p5dxno"
 
 [node name="VoxelViewer" type="VoxelViewer" parent="." unique_id=1901078906]
 view_distance = 16384

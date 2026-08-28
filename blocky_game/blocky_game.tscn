@@ -13,7 +13,6 @@
 [ext_resource type="NoiseTexture3D" uid="uid://c67xpff5rneoy" path="res://blocky_game/blocks/noise_texture_3d.tres" id="12_vmukk"]
 [ext_resource type="Script" uid="uid://bbfct6petonud" path="res://blocky_game/items/item_db.gd" id="13"]
 [ext_resource type="Script" uid="uid://cqsy2cuxfp57d" path="res://blocky_game/VoxelHighlightManager.gd" id="14_highlight"]
-[ext_resource type="Script" uid="uid://88cgk7p5dxno" path="res://blocky_game/gui/radial_menu.gd" id="15_iihdp"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_x2ref"]
 ground_bottom_color = Color(0.64705884, 0.654902, 0.67058825, 1)
@@ -348,9 +347,3 @@ material = SubResource("ORMMaterial3D_vmukk")
 light_energy = 16.0
 omni_range = 12.0
 omni_attenuation = 1.5
-
-[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1388497922]
-
-[node name="RadialMenu" type="Node2D" parent="CanvasLayer" unique_id=884753003]
-script = ExtResource("15_iihdp")
-metadata/_custom_type_script = "uid://88cgk7p5dxno"

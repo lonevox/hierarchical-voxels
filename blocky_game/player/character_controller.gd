@@ -1,6 +1,18 @@
 extends Node3D
 class_name CharacterController
 
+enum MovementState {
+	GROUNDED,
+	AIRBORNE,
+	FLYING,
+}
+
+const CHARACTER_AABB := AABB(Vector3(-0.4, -0.9, -0.4), Vector3(0.8, 1.8, 0.8))
+
+class MovementResult:
+	var landed := false
+	var has_stepped_up := false
+
 @export var speed := 5.0
 @export var gravity := 9.8
 @export var jump_force := 5.0
@@ -11,128 +23,46 @@ class_name CharacterController
 
 var _voxel_tool: VoxelToolMultiTerrain
 var _velocity := Vector3()
-var _grounded := false
 var _head: Node3D = null
-var _flying := false
+var _movement_state_machine: StateMachine
 
 
 func _ready():
 	_voxel_tool = multi_terrain.get_voxel_tool()
 	_head = get_node(head)
 
+	_movement_state_machine = StateMachine.new(MovementState.AIRBORNE)
+	_movement_state_machine.add_state(
+		MovementState.GROUNDED,
+		_enter_grounded,
+		Callable(),
+		Callable(),
+		_physics_process_grounded
+	)
+	_movement_state_machine.add_state(
+		MovementState.AIRBORNE,
+		Callable(),
+		Callable(),
+		Callable(),
+		_physics_process_airborne
+	)
+	_movement_state_machine.add_state(
+		MovementState.FLYING,
+		_enter_flying,
+		Callable(),
+		Callable(),
+		_physics_process_flying
+	)
+	_movement_state_machine.start()
+
 
 func _physics_process(delta: float):
-	var forward = _head.get_transform().basis.z.normalized()
-	forward = Plane(Vector3(0, 1, 0), 0).project(forward)
-	var right = _head.get_transform().basis.x.normalized()
-	var motor = Vector3()
-	
-	if Input.is_key_pressed(KEY_UP) or Input.is_key_pressed(KEY_Z) or Input.is_key_pressed(KEY_W):
-		motor -= forward
-	if Input.is_key_pressed(KEY_DOWN) or Input.is_key_pressed(KEY_S):
-		motor += forward
-	if Input.is_key_pressed(KEY_LEFT) or Input.is_key_pressed(KEY_Q) or Input.is_key_pressed(KEY_A):
-		motor -= right
-	if Input.is_key_pressed(KEY_RIGHT) or Input.is_key_pressed(KEY_D):
-		motor += right
-	
-	motor = motor.normalized() * speed
-	
-	_velocity.x = motor.x
-	_velocity.z = motor.z
-	if !_flying:
-		_velocity.y -= gravity * delta
-	else:
-		_velocity.x *= 5
-		_velocity.z *= 5
-		if Input.is_key_pressed(KEY_CTRL):
-			_velocity.x *= 10
-			_velocity.z *= 10
-		_velocity.y = 0
-	
-	if Input.is_key_pressed(KEY_F):
-		_flying = !_flying
-		if _flying:
-			_velocity.y = 0
-	
-	if Input.is_key_pressed(KEY_SPACE):
-		if _grounded:
-			_velocity.y = jump_force
-			_grounded = false
-		elif _flying:
-			_velocity.y = speed * 5
-			if Input.is_key_pressed(KEY_CTRL):
-				_velocity.y = speed * 50
-	if _flying and Input.is_key_pressed(KEY_SHIFT):
-		_velocity.y = -speed * 5
-		if Input.is_key_pressed(KEY_CTRL):
-				_velocity.y = -speed * 50
-	
-	var motion := _velocity * delta
-	
-	var aabb := AABB(Vector3(-0.4, -0.9, -0.4), Vector3(0.8, 1.8, 0.8))
-	
-	# Don't fall to infinity, wait until terrain loads
-	var global_aabb := AABB(aabb.position + position, aabb.size)
-	var wait_for_load := false
-	if !_voxel_tool.is_area_editable(global_aabb):
-		wait_for_load = true
-	
-	if !wait_for_load:
-		# VoxelBoxMover separates bodies from voxels by a margin in terrain-local
-		# coordinates. At larger terrain scales gravity can be smaller than the
-		# resulting world-space gap, causing the player to jitter up and down,
-		# so don't apply gravity while on the floor.
-		if !_flying and _grounded:
-			if multi_terrain.is_box_mover_on_floor(position, aabb):
-				_velocity.y = 0
-				motion.y = 0
-			else:
-				_grounded = false
+	_movement_state_machine.physics_process(delta)
+	DDD.set_text("Movement state", MovementState.find_key(_movement_state_machine.get_state()))
+	_broadcast_position()
 
-		var prev_motion := motion
 
-		# Modify motion taking collisions into account
-		var box_mover_motion := multi_terrain.get_box_mover_motion(position, motion, aabb)
-		motion = box_mover_motion.motion
-		DDD.set_text("Motion", motion)
-		var landed := (
-			!_flying
-			and prev_motion.y < 0
-			and motion.y > prev_motion.y
-			and !is_equal_approx(motion.y, prev_motion.y)
-		)
-		# The collision margin can produce a small upward correction on contact.
-		# Remaining at the current height is enough when approaching from above.
-		if landed and motion.y > 0:
-			motion.y = 0
-
-		# Apply motion with a raw translation.
-		global_translate(motion)
-
-		# A downward motion constrained by terrain means we just landed. Apply any
-		# downward distance needed to reach the surface, but don't retain it as velocity.
-		if landed:
-			_grounded = true
-			motion.y = 0
-		elif !_flying and box_mover_motion.has_stepped_up:
-			# When we step up, the motion vector will have vertical movement due
-			# to snapping the body on top of the step. So after we applied motion,
-			# we consider it grounded, and we reset motion.y so we don't induce
-			# a "jump" velocity in the next physics step.
-			motion.y = 0
-			_grounded = true
-		# Otherwise, if new motion is moving vertically, we may not be grounded anymore
-		elif absf(motion.y) > 0.001:
-			_grounded = false
-
-		# TODO Stepping up stairs is quite janky. Minecraft seems to smooth it out a little.
-		# That would be a visual-only trick to apply it seems.
-
-	assert(delta > 0)
-	# Re-inject velocity from resulting motion
-	_velocity = motion / delta
-
+func _broadcast_position() -> void:
 	var mp := get_tree().get_multiplayer()
 	if mp.has_multiplayer_peer():
 		# Broadcast our position to other peers.
@@ -142,8 +72,117 @@ func _physics_process(delta: float):
 		rpc(&"receive_position", position)
 
 
+func _get_horizontal_motor() -> Vector3:
+	var input_direction := Input.get_vector("move_left", "move_right", "move_forwards", "move_backwards")
+	var forward := _head.get_transform().basis.z.normalized()
+	forward = Plane(Vector3.UP, 0).project(forward).normalized()
+	var right := _head.get_transform().basis.x.normalized()
+	return (right * input_direction.x + forward * input_direction.y) * speed
+
+
+func _physics_process_grounded(delta: float) -> void:
+	_update_on_foot_velocity(delta)
+	var area_editable := _is_movement_area_editable()
+
+	# VoxelBoxMover separates bodies from voxels by a margin in terrain-local
+	# coordinates. At larger terrain scales gravity can be smaller than the
+	# resulting world-space gap, causing the player to jitter up and down, so
+	# don't apply gravity while on the floor.
+	if area_editable and _movement_state_machine.is_in_state(MovementState.GROUNDED):
+		if multi_terrain.is_box_mover_on_floor(position, CHARACTER_AABB):
+			_velocity.y = 0
+		else:
+			_movement_state_machine.transition_to(MovementState.AIRBORNE)
+
+	var result := _move_and_collide(delta, area_editable, _movement_state_machine.is_in_state(MovementState.AIRBORNE))
+	_handle_ground_contact(result)
+
+
+func _physics_process_airborne(delta: float) -> void:
+	_update_on_foot_velocity(delta)
+	var result := _move_and_collide(delta, _is_movement_area_editable(), true)
+	_handle_ground_contact(result)
+
+
+func _update_on_foot_velocity(delta: float) -> void:
+	var motor := _get_horizontal_motor()
+	_velocity.x = motor.x
+	_velocity.z = motor.z
+	_velocity.y -= gravity * delta
+
+	if Input.is_action_pressed("move_up") and _movement_state_machine.is_in_state(MovementState.GROUNDED):
+		_velocity.y = jump_force
+		_movement_state_machine.transition_to(MovementState.AIRBORNE)
+
+
+func _physics_process_flying(delta: float) -> void:
+	var motor := _get_horizontal_motor()
+	var speed_multiplier := 5.0
+	if Input.is_key_pressed(KEY_CTRL):
+		speed_multiplier *= 10.0
+
+	_velocity.x = motor.x * speed_multiplier
+	_velocity.z = motor.z * speed_multiplier
+	_velocity.y = Input.get_axis("move_down", "move_up") * speed * speed_multiplier
+	_move_and_collide(delta, _is_movement_area_editable(), false)
+
+
+func _is_movement_area_editable() -> bool:
+	var global_aabb := AABB(CHARACTER_AABB.position + position, CHARACTER_AABB.size)
+	return _voxel_tool.is_area_editable(global_aabb)
+
+
+func _move_and_collide(delta: float, area_editable: bool, detect_landing: bool) -> MovementResult:
+	var result := MovementResult.new()
+	var requested_motion := _velocity * delta
+	var motion := requested_motion
+
+	# Don't move into terrain that has not loaded yet.
+	if area_editable:
+		var box_mover_motion := multi_terrain.get_box_mover_motion(position, motion, CHARACTER_AABB)
+		motion = box_mover_motion.motion
+		result.has_stepped_up = box_mover_motion.has_stepped_up
+		result.landed = (
+			detect_landing
+			and requested_motion.y < 0
+			and motion.y > requested_motion.y
+			and not is_equal_approx(motion.y, requested_motion.y)
+		)
+
+		# The collision margin can produce a small upward correction on contact.
+		# Remaining at the current height is enough when approaching from above.
+		if result.landed and motion.y > 0:
+			motion.y = 0
+
+		global_translate(motion)
+		DDD.set_text("Motion", motion)
+
+	assert(delta > 0)
+	_velocity = motion / delta
+	return result
+
+
+func _handle_ground_contact(result: MovementResult) -> void:
+	if result.landed or result.has_stepped_up:
+		# Step-up motion includes vertical displacement used to place the body on
+		# the step, but that displacement must not become upward velocity.
+		_velocity.y = 0
+		_movement_state_machine.transition_to(MovementState.GROUNDED)
+
+
+func _enter_grounded() -> void:
+	_velocity.y = 0
+
+
+func _enter_flying() -> void:
+	_velocity.y = 0
+
+
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("toggle_hud"):
+	if event.is_action_pressed("toggle_fly"):
+		var next_state := MovementState.AIRBORNE if _movement_state_machine.is_in_state(MovementState.FLYING) else MovementState.FLYING
+		_movement_state_machine.transition_to(next_state)
+	elif event.is_action_pressed("toggle_hud"):
 		%HUD.visible = !%HUD.visible
 		DDD.visible = !DDD.visible
 
