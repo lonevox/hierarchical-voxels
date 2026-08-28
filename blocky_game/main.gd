@@ -11,6 +11,15 @@ var _game : BlockyGame
 var _upnp_helper : UPNPHelper
 
 
+func _ready() -> void:
+	DDD.visible = false
+
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("toggle_debug_menu"):
+		DDD.visible = not DDD.visible
+
+
 func _on_main_menu_singleplayer_requested():
 	_game = BlockyGameScene.instantiate()
 	_game.set_network_mode(BlockyGame.NETWORK_MODE_SINGLEPLAYER)

@@ -184,7 +184,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		_movement_state_machine.transition_to(next_state)
 	elif event.is_action_pressed("toggle_hud"):
 		%HUD.visible = !%HUD.visible
-		DDD.visible = !DDD.visible
 
 
 @rpc("authority", "call_remote", "unreliable")
