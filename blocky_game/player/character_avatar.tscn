@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://c0wr4bmx2e43l" path="res://blocky_terrain/crosshair.png" id="4"]
 [ext_resource type="PackedScene" uid="uid://bv2c3jwi46pfg" path="res://blocky_game/gui/hotbar/hotbar.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://bm2v4asqyh6a" path="res://blocky_game/player/character_visual.tscn" id="6_peahy"]
-[ext_resource type="PackedScene" uid="uid://cg54toj1o7c2u" path="res://blocky_game/gui/inventory/inventory.tscn" id="7"]
+[ext_resource type="PackedScene" uid="uid://cg54toj1o7c2u" path="res://blocky_game/gui/material_browser/material_browser.tscn" id="7"]
 [ext_resource type="Script" uid="uid://nlc6n2ehlntw" path="res://blocky_game/gui/hud.gd" id="8_hud"]
 [ext_resource type="Script" uid="uid://88cgk7p5dxno" path="res://blocky_game/gui/radial_menu.gd" id="9_radial"]
 [ext_resource type="Script" uid="uid://dw7yjhsy5iq2j" path="res://blocky_game/gui/radial_menu_option.gd" id="10_nco1x"]
@@ -188,7 +188,7 @@ offset_top = -64.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="Inventory" parent="HUD" unique_id=123110943 instance=ExtResource("7")]
+[node name="MaterialBrowser" parent="HUD" unique_id=123110943 instance=ExtResource("7")]
 visible = false
 layout_mode = 1
 grow_horizontal = 2
@@ -216,5 +216,3 @@ trail_enabled = true
 trail_lifetime = 0.2
 process_material = SubResource("ParticleProcessMaterial_vop3k")
 draw_pass_1 = SubResource("RibbonTrailMesh_nco1x")
-
-[connection signal="changed" from="HUD/Inventory" to="HUD/HotBar" method="_on_Inventory_changed"]

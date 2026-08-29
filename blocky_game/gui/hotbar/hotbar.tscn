@@ -18,11 +18,6 @@ layout_mode = 2
 [node name="HotbarSlot" parent="HBoxContainer" unique_id=1188835869 instance=ExtResource("3")]
 layout_mode = 2
 
-[node name="HotbarSlotSelect" parent="HBoxContainer/HotbarSlot" unique_id=1560158577 instance=ExtResource("2")]
-show_behind_parent = true
-layout_mode = 0
-expand_mode = 1
-
 [node name="HotbarSlot2" parent="HBoxContainer" unique_id=1289304755 instance=ExtResource("3")]
 layout_mode = 2
 
@@ -34,6 +29,11 @@ layout_mode = 2
 
 [node name="HotbarSlot5" parent="HBoxContainer" unique_id=1656026053 instance=ExtResource("3")]
 layout_mode = 2
+
+[node name="HotbarSlotSelect" parent="HBoxContainer/HotbarSlot5" unique_id=1560158577 instance=ExtResource("2")]
+show_behind_parent = true
+layout_mode = 0
+expand_mode = 1
 
 [node name="HotbarSlot6" parent="HBoxContainer" unique_id=1829308772 instance=ExtResource("3")]
 layout_mode = 2

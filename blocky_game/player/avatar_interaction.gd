@@ -3,7 +3,7 @@ extends Node
 const Util = preload("res://common/util.gd")
 const Blocks = preload("../blocks/blocks.gd")
 const ItemDB = preload("../items/item_db.gd")
-const InventoryItem = preload("./inventory_item.gd")
+const HotbarItem = preload("./hotbar_item.gd")
 const Hotbar = preload("../gui/hotbar/hotbar.gd")
 const WaterUpdater = preload("./../water.gd")
 const InteractionCommon = preload("./interaction_common.gd")
@@ -110,10 +110,10 @@ func _physics_process(_delta):
 		DDD.set_text("Global pointed voxel", "---")
 		DDD.set_text("Pointed voxel", "---")
 
-	var inv_item := _hotbar.get_selected_item()
+	var hotbar_item := _hotbar.get_selected_item()
 	
 	# These inputs have to be in _fixed_process because they rely on collision queries
-	if inv_item == null or inv_item.type == InventoryItem.TYPE_BLOCK:
+	if hotbar_item == null or hotbar_item.type == HotbarItem.TYPE_BLOCK:
 		if hit != null:
 			var voxel_tool := _voxel_tool.voxel_tools[hit.terrain]
 			var hit_raw_id := voxel_tool.get_voxel(hit.raycast_result.position)
@@ -123,7 +123,7 @@ func _physics_process(_delta):
 				var pos := hit.raycast_result.position
 				_place_single_block(hit.terrain_index, pos, 0)
 			
-			elif _action_place && inv_item != null:
+			elif _action_place && hotbar_item != null:
 				var placement_terrain_index := _placement_scale - 1
 				var placement_terrain := _multi_terrain.terrains[placement_terrain_index]
 				var placement_terrain_scale := int(placement_terrain.scale.x)
@@ -134,7 +134,7 @@ func _physics_process(_delta):
 				# TODO: The collision area isn't necessarily going to be a whole cube voxel if e.g., the placed voxel is a stair shape
 				var placement_size := Vector3i.ONE * placement_terrain_scale
 				if not _voxel_tool.has_voxels_in_area(global_pos, placement_size):
-					_place_single_block(placement_terrain_index, pos, inv_item.id)
+					_place_single_block(placement_terrain_index, pos, hotbar_item.id)
 				else:
 					# Render voxel errors
 					var placement_collisions := _voxel_tool.get_voxels_in_area(global_pos, placement_size)
@@ -146,9 +146,9 @@ func _physics_process(_delta):
 					tween.tween_interval(ERROR_HOLD_DURATION)
 					tween.tween_property(_cursor.material_override, "albedo_color", Color.WHITE, ERROR_FADE_OUT_DURATION)
 	
-	elif inv_item.type == InventoryItem.TYPE_ITEM:
+	elif hotbar_item.type == HotbarItem.TYPE_ITEM:
 		if _action_use:
-			var item = _item_db.get_item(inv_item.id)
+			var item = _item_db.get_item(hotbar_item.id)
 			item.use(_head.global_transform)
 	
 	if _action_pick and hit != null:

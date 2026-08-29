@@ -3,14 +3,14 @@ extends Control
 
 enum State {
 	GAMEPLAY,
-	INVENTORY,
+	MATERIAL_BROWSER,
 	RADIAL_MENU,
 }
 
 signal state_changed(state: int)
 
 @onready var _crosshair: Control = $Crosshair
-@onready var _inventory = $Inventory
+@onready var _material_browser = $MaterialBrowser
 @onready var _radial_menu: RadialMenu = $RadialMenu
 
 var _state_machine: StateMachine
@@ -20,7 +20,7 @@ var _gameplay_mouse_mode := Input.MOUSE_MODE_CAPTURED
 func _ready() -> void:
 	_state_machine = StateMachine.new(State.GAMEPLAY)
 	_state_machine.add_state(State.GAMEPLAY, _enter_gameplay, _exit_gameplay)
-	_state_machine.add_state(State.INVENTORY, _enter_inventory, _exit_inventory)
+	_state_machine.add_state(State.MATERIAL_BROWSER, _enter_material_browser, _exit_material_browser)
 	_state_machine.add_state(State.RADIAL_MENU, _enter_radial_menu, _exit_radial_menu)
 	_state_machine.state_changed.connect(_on_state_changed)
 	_state_machine.start()
@@ -41,10 +41,10 @@ func _input(event: InputEvent) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_E:
-			_toggle_inventory()
+			_toggle_material_browser()
 			get_viewport().set_input_as_handled()
 			return
-		elif event.keycode == KEY_ESCAPE and _state_machine.is_in_state(State.INVENTORY):
+		elif event.keycode == KEY_ESCAPE and _state_machine.is_in_state(State.MATERIAL_BROWSER):
 			_state_machine.transition_to(State.GAMEPLAY)
 			get_viewport().set_input_as_handled()
 			return
@@ -58,15 +58,15 @@ func _unhandled_input(event: InputEvent) -> void:
 			_state_machine.transition_to(State.GAMEPLAY)
 		get_viewport().set_input_as_handled()
 	elif not _state_machine.is_in_state(State.GAMEPLAY) and event is InputEventMouse:
-		# Inventory Controls normally consume their own mouse input. This catches
+		# Material browser Controls normally consume their own mouse input. This catches
 		# anything they intentionally allow through before it reaches the world.
 		get_viewport().set_input_as_handled()
 
 
-func _toggle_inventory() -> void:
+func _toggle_material_browser() -> void:
 	if _state_machine.is_in_state(State.GAMEPLAY):
-		_state_machine.transition_to(State.INVENTORY)
-	elif _state_machine.is_in_state(State.INVENTORY):
+		_state_machine.transition_to(State.MATERIAL_BROWSER)
+	elif _state_machine.is_in_state(State.MATERIAL_BROWSER):
 		_state_machine.transition_to(State.GAMEPLAY)
 
 
@@ -80,13 +80,13 @@ func _exit_gameplay() -> void:
 	_gameplay_mouse_mode = Input.get_mouse_mode()
 
 
-func _enter_inventory() -> void:
+func _enter_material_browser() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	_inventory.open_inventory()
+	_material_browser.open_browser()
 
 
-func _exit_inventory() -> void:
-	_inventory.close_inventory()
+func _exit_material_browser() -> void:
+	_material_browser.close_browser()
 
 
 func _enter_radial_menu() -> void:

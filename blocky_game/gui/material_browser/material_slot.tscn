@@ -1,0 +1,57 @@
+[gd_scene format=3 uid="uid://ctgybeqqsdjsc"]
+
+[ext_resource type="Script" uid="uid://2fexqs2ivtll" path="res://blocky_game/gui/material_browser/material_slot.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://ou88l0fsjs1u" path="res://blocky_game/gui/hotbar/hotbar_slot_bg.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://cbrlpwyada727" path="res://blocky_game/blocks/dirt/dirt_sprite.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://c6dnsxwm3v303" path="res://blocky_game/gui/material_browser/Pin.svg" id="4"]
+
+[node name="MaterialSlot" type="Control"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 64.0
+offset_bottom = 64.0
+mouse_default_cursor_shape = 2
+script = ExtResource("1")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("2")
+
+[node name="Hover" type="TextureRect" parent="."]
+visible = false
+modulate = Color(1.25, 1.25, 1.25, 1)
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("2")
+
+[node name="Icon" type="TextureRect" parent="."]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+mouse_filter = 2
+texture = ExtResource("3")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="Pin" type="TextureRect" parent="."]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -20.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = 20.0
+mouse_filter = 2
+texture = ExtResource("4")
+expand_mode = 1

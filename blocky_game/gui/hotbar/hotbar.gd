@@ -1,73 +1,167 @@
 extends CenterContainer
 
-const InventoryItem = preload("../../player/inventory_item.gd")
+signal items_changed
 
-@onready var _selected_frame = $HBoxContainer/HotbarSlot/HotbarSlotSelect
+const HotbarItem = preload("../../player/hotbar_item.gd")
+
+const VISIBLE_SLOT_COUNT := 9
+const SELECTED_SLOT_INDEX := 4
+
 @onready var _slot_container = $HBoxContainer
 @onready var _block_types = get_node(^"/root/Main/Game/Blocks")
-@onready var _inventory = get_node(^"../Inventory")
 
-var _hotbar_index := 0
-
-
-func _ready():
-	call_deferred("_update_views")
+var _items: Array[HotbarItem] = []
+var _selected_item_index := 0
 
 
-func _update_views():
-	for i in _inventory.get_hotbar_slot_count():
-		var slot_data = _inventory.get_hotbar_slot_data(i)
-		var slot_view = _slot_container.get_child(i)
-		slot_view.get_display().set_item(slot_data)
+func _ready() -> void:
+	assert(_slot_container.get_child_count() == VISIBLE_SLOT_COUNT)
+	_update_views()
 
 
-func select_slot(i: int):
-	if _hotbar_index == i:
+func set_items(items: Array[HotbarItem]) -> void:
+	_items = items.duplicate()
+	_selected_item_index = 0
+	_update_views_if_ready()
+	items_changed.emit()
+
+
+func add_item(item: HotbarItem) -> void:
+	_items.append(item)
+	_update_views_if_ready()
+	items_changed.emit()
+
+
+func remove_item_at(item_index: int) -> void:
+	assert(item_index >= 0 and item_index < _items.size())
+	_items.remove_at(item_index)
+
+	if _items.is_empty():
+		_selected_item_index = 0
+	elif item_index < _selected_item_index:
+		_selected_item_index -= 1
+	else:
+		_selected_item_index %= _items.size()
+
+	_update_views_if_ready()
+	items_changed.emit()
+
+
+func pin_material(block_id: int) -> void:
+	if is_material_pinned(block_id):
 		return
-	assert(i >= 0 and i < _inventory.get_hotbar_slot_count())
-	_hotbar_index = i
-	
-	var item = _inventory.get_hotbar_slot_data(_hotbar_index)
-	if item != null:
-		if item.type == InventoryItem.TYPE_BLOCK:
+
+	var item := HotbarItem.new()
+	item.type = HotbarItem.TYPE_BLOCK
+	item.id = block_id
+	add_item(item)
+
+
+func unpin_material(block_id: int) -> void:
+	for item_index in _items.size():
+		var item := _items[item_index]
+		if item != null and item.type == HotbarItem.TYPE_BLOCK and item.id == block_id:
+			remove_item_at(item_index)
+			return
+
+
+func is_material_pinned(block_id: int) -> bool:
+	for item in _items:
+		if item != null and item.type == HotbarItem.TYPE_BLOCK and item.id == block_id:
+			return true
+	return false
+
+
+func get_item_count() -> int:
+	return _items.size()
+
+
+func _update_views_if_ready() -> void:
+	if is_node_ready():
+		_update_views()
+
+
+func _update_views() -> void:
+	if _items.is_empty():
+		for slot_index in VISIBLE_SLOT_COUNT:
+			var slot_view = _slot_container.get_child(slot_index)
+			slot_view.get_display().set_item(null)
+		return
+
+	var visible_item_count := mini(_items.size(), VISIBLE_SLOT_COUNT)
+	var left_item_count := mini(
+		SELECTED_SLOT_INDEX,
+		floori(float(visible_item_count - 1) / 2.0)
+	)
+	var right_item_count := visible_item_count - left_item_count - 1
+
+	for slot_index in VISIBLE_SLOT_COUNT:
+		var item: HotbarItem = null
+		var offset := slot_index - SELECTED_SLOT_INDEX
+		if offset >= -left_item_count and offset <= right_item_count:
+			var item_index := posmod(_selected_item_index + offset, _items.size())
+			item = _items[item_index]
+
+		var slot_view = _slot_container.get_child(slot_index)
+		slot_view.get_display().set_item(item)
+
+
+## Rotates the item currently displayed in slot [param slot_index] into the
+## selected center slot. Empty visible slots do nothing.
+func select_slot(slot_index: int) -> void:
+	assert(slot_index >= 0 and slot_index < VISIBLE_SLOT_COUNT)
+	if _items.is_empty():
+		return
+
+	var visible_item_count := mini(_items.size(), VISIBLE_SLOT_COUNT)
+	var left_item_count := mini(SELECTED_SLOT_INDEX, floori(float(visible_item_count - 1) / 2.0))
+	var right_item_count := visible_item_count - left_item_count - 1
+	var offset := slot_index - SELECTED_SLOT_INDEX
+	if offset < -left_item_count or offset > right_item_count:
+		return
+
+	_select_item(_selected_item_index + offset)
+
+
+func _select_item(item_index: int) -> void:
+	if _items.is_empty():
+		return
+
+	item_index = posmod(item_index, _items.size())
+	if _selected_item_index == item_index:
+		return
+
+	_selected_item_index = item_index
+	_update_views_if_ready()
+
+	var item := _items[_selected_item_index]
+	if is_node_ready() and item != null:
+		if item.type == HotbarItem.TYPE_BLOCK:
 			var block = _block_types.get_block(item.id)
 			print("Hotbar select block ", block.base_info.name)
-			
-		elif item.type == InventoryItem.TYPE_ITEM:
+
+		elif item.type == HotbarItem.TYPE_ITEM:
 			# TODO Item db
 			print("Hotbar select item ", item.id)
-	
-	_selected_frame.get_parent().remove_child(_selected_frame)
-	var slot = _slot_container.get_child(i)
-	slot.add_child(_selected_frame)
 
 
-func get_selected_item() -> InventoryItem:
-	return _inventory.get_hotbar_slot_data(_hotbar_index)
+func get_selected_item() -> HotbarItem:
+	if _items.is_empty():
+		return null
+	return _items[_selected_item_index]
 
 
-func try_select_slot_by_block_id(block_id: int):
-	for i in _inventory.get_hotbar_slot_count():
-		var item = _inventory.get_hotbar_slot_data(i)
-		if item.type == InventoryItem.TYPE_BLOCK:
-			if item.id == block_id:
-				select_slot(i)
-				break
+func try_select_slot_by_block_id(block_id: int) -> void:
+	for item_index in _items.size():
+		var item := _items[item_index]
+		if item != null and item.type == HotbarItem.TYPE_BLOCK and item.id == block_id:
+			_select_item(item_index)
+			return
 
 
-func select_next_slot():
-	var i = _hotbar_index + 1
-	if i >= _inventory.get_hotbar_slot_count():
-		i = 0
-	select_slot(i)
+func select_next_slot() -> void:
+	_select_item(_selected_item_index + 1)
 
 
-func select_previous_slot():
-	var i = _hotbar_index - 1
-	if i < 0:
-		i = _inventory.get_hotbar_slot_count() - 1
-	select_slot(i)
-
-
-func _on_Inventory_changed():
-	_update_views()
+func select_previous_slot() -> void:
+	_select_item(_selected_item_index - 1)
