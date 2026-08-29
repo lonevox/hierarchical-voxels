@@ -24,6 +24,10 @@ DDD="*res://addons/zylann.debug_draw/debug_draw.gd"
 window/size/viewport_width=1280
 window/size/viewport_height=720
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/lens_effects/plugin.cfg")
+
 [input]
 
 toggle_hud={

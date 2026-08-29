@@ -3,7 +3,9 @@
 [ext_resource type="Script" uid="uid://l3lvso20howc" path="res://Settings.gd" id="2_vmukk"]
 [ext_resource type="Script" uid="uid://bukhhnwyc247r" path="res://blocky_game/VoxelMultiTerrain.gd" id="4_rbe4n"]
 [ext_resource type="Script" uid="uid://b2sgbpc3ratxy" path="res://blocky_game/blocky_game.gd" id="5"]
+[ext_resource type="Script" uid="uid://dtcj8q73e4f6t" path="res://addons/lens_effects/lens_flare_compositor_effect.gd" id="5_iihdp"]
 [ext_resource type="VoxelBlockyLibrary" uid="uid://ctn2wqssoxvj5" path="res://blocky_game/blocks/voxel_library.tres" id="6_bxxj4"]
+[ext_resource type="Script" uid="uid://uo17jmrj0bdv" path="res://addons/lens_effects/world_environment.gd" id="6_d300o"]
 [ext_resource type="Texture2D" uid="uid://c4qaphqjslhv6" path="res://icon.svg" id="6_s4ggr"]
 [ext_resource type="Script" uid="uid://cxpgxknwub8b8" path="res://blocky_game/debug_info.gd" id="8"]
 [ext_resource type="Material" uid="uid://cw85kxowmkj37" path="res://blocky_game/wet_concrete.tres" id="8_bxxj4"]
@@ -40,6 +42,19 @@ volumetric_fog_anisotropy = 0.9
 adjustment_enabled = true
 adjustment_contrast = 1.1
 adjustment_saturation = 0.8
+
+[sub_resource type="CompositorEffect" id="CompositorEffect_y4txp"]
+resource_local_to_scene = false
+resource_name = ""
+enabled = true
+effect_callback_type = 4
+needs_motion_vectors = false
+needs_normal_roughness = false
+script = ExtResource("5_iihdp")
+metadata/_custom_type_script = "uid://dtcj8q73e4f6t"
+
+[sub_resource type="Compositor" id="Compositor_hwt7q"]
+compositor_effects = Array[CompositorEffect]([SubResource("CompositorEffect_y4txp")])
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_rbe4n"]
 frequency = 0.002
@@ -234,8 +249,11 @@ script = ExtResource("12")
 [node name="Items" type="Node" parent="." unique_id=1259545691]
 script = ExtResource("13")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=521229753]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=521229753 node_paths=PackedStringArray("sun")]
 environment = SubResource("Environment_d300o")
+compositor = SubResource("Compositor_hwt7q")
+script = ExtResource("6_d300o")
+sun = NodePath("../DirectionalLight3D")
 
 [node name="VoxelMultiTerrain" type="Node3D" parent="." unique_id=407146468]
 script = ExtResource("4_rbe4n")
