@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://byodo8lqgyc2a"
+path="res://.godot/imported/slope_6_4.obj-6e15c8e23e73ae15512ac86f2fc03a64.mesh"
+
+[deps]
+
+files=["res://.godot/imported/slope_6_4.obj-6e15c8e23e73ae15512ac86f2fc03a64.mesh"]
+
+source_file="res://blocky_game/blocks/slopes/slope_6_4.obj"
+dest_files=["res://.godot/imported/slope_6_4.obj-6e15c8e23e73ae15512ac86f2fc03a64.mesh", "res://.godot/imported/slope_6_4.obj-6e15c8e23e73ae15512ac86f2fc03a64.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false
