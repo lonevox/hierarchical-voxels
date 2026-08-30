@@ -39,15 +39,14 @@ func _input(event: InputEvent) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_E:
-			_toggle_material_browser()
-			get_viewport().set_input_as_handled()
-			return
-		elif event.keycode == KEY_ESCAPE and _state_machine.is_in_state(State.MATERIAL_BROWSER):
-			_state_machine.transition_to(State.GAMEPLAY)
-			get_viewport().set_input_as_handled()
-			return
+	if event.is_action_pressed("toggle_material_browser"):
+		_toggle_material_browser()
+		get_viewport().set_input_as_handled()
+		return
+	elif event.is_action_pressed("ui_close_dialog") and _state_machine.is_in_state(State.MATERIAL_BROWSER):
+		_state_machine.transition_to(State.GAMEPLAY)
+		get_viewport().set_input_as_handled()
+		return
 
 	if event.is_action_pressed("show_building_radial_menu"):
 		if _state_machine.is_in_state(State.GAMEPLAY):
