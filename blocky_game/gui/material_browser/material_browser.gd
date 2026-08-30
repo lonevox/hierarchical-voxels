@@ -3,7 +3,7 @@ extends ColorRect
 const Hotbar = preload("../hotbar/hotbar.gd")
 const MaterialSlotScene = preload("material_slot.tscn")
 
-@onready var _block_types = get_node(^"/root/Main/Game/Blocks")
+@onready var _blocks = get_node(^"/root/Main/Game/Blocks")
 @onready var _hotbar: Hotbar = get_node(^"../HotBar")
 @onready var _search_box: LineEdit = $CC/PC/VB/Header/SearchBox
 @onready var _material_grid: GridContainer = $CC/PC/VB/MaterialScroll/MaterialGrid
@@ -19,14 +19,12 @@ func _ready() -> void:
 
 
 func _populate_materials() -> void:
-	# Block zero is air, so it is not a material the player can pin.
-	for block_id in range(1, _block_types.get_block_count()):
-		var block = _block_types.get_block(block_id)
+	for material_id in _blocks.get_material_count():
 		var slot = MaterialSlotScene.instantiate()
 		_material_grid.add_child(slot)
-		slot.configure(block_id, block.base_info.name, block.base_info.sprite_texture)
+		slot.configure(material_id, _blocks.get_material_name(material_id), null)
 		slot.pressed.connect(_on_material_pressed)
-		_material_slots[block_id] = slot
+		_material_slots[material_id] = slot
 
 
 func open_browser() -> void:
@@ -45,13 +43,13 @@ func _on_search_text_changed(query: String) -> void:
 		slot.visible = normalized_query.is_empty() or normalized_query in searchable_name
 
 
-func _on_material_pressed(block_id: int) -> void:
-	if _hotbar.is_material_pinned(block_id):
-		_hotbar.unpin_material(block_id)
+func _on_material_pressed(material_id: int) -> void:
+	if _hotbar.is_material_pinned(material_id):
+		_hotbar.unpin_material(material_id)
 	else:
-		_hotbar.pin_material(block_id)
+		_hotbar.pin_material(material_id)
 
 
 func _update_pin_icons() -> void:
-	for block_id in _material_slots:
-		_material_slots[block_id].set_pinned(_hotbar.is_material_pinned(block_id))
+	for material_id in _material_slots:
+		_material_slots[material_id].set_pinned(_hotbar.is_material_pinned(material_id))

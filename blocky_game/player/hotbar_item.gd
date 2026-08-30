@@ -1,8 +1,8 @@
 
-const TYPE_BLOCK = 0
+const TYPE_MATERIAL = 0
 const TYPE_ITEM = 1
 
-var type := TYPE_BLOCK
+var type := TYPE_MATERIAL
 var id := 0
 # TODO Can't type hint self
 func duplicate():

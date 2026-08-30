@@ -5,7 +5,6 @@ const Blocks = preload("../blocks/blocks.gd")
 const ItemDB = preload("../items/item_db.gd")
 const HotbarItem = preload("./hotbar_item.gd")
 const Hotbar = preload("../gui/hotbar/hotbar.gd")
-const WaterUpdater = preload("./../water.gd")
 const InteractionCommon = preload("./interaction_common.gd")
 
 const COLLISION_LAYER_AVATAR = 2
@@ -36,9 +35,8 @@ const _hotbar_keys = {
 # TODO Eventually invert these dependencies
 @onready var _head : Camera3D = get_parent().get_node("Camera")
 @onready var _hotbar : Hotbar = get_node("../HUD/HotBar")
-@onready var _block_types : Blocks = get_node("/root/Main/Game/Blocks")
+@onready var _blocks : Blocks = get_node("/root/Main/Game/Blocks")
 @onready var _item_db : ItemDB = get_node("/root/Main/Game/Items")
-@onready var _water_updater : WaterUpdater
 @onready var _multi_terrain: VoxelMultiTerrain = get_node("/root/Main/Game/VoxelMultiTerrain")
 @onready var _voxel_tool := _multi_terrain.get_voxel_tool()
 @onready var _voxel_highlight_manager: VoxelHighlightManager = get_node("/root/Main/Game/VoxelHighlightManager")
@@ -62,10 +60,6 @@ func _ready():
 	mesh_instance.scale = Vector3.ONE * CURSOR_SCALE
 	_cursor = mesh_instance
 	_multi_terrain.add_child(_cursor)
-
-	var mp := get_tree().get_multiplayer()
-	if mp.has_multiplayer_peer() == false or mp.is_server():
-		_water_updater = get_node("/root/Main/Game/Water")
 
 	_error_highlight = _voxel_highlight_manager.create_highlight(self)
 
@@ -113,7 +107,7 @@ func _physics_process(_delta):
 	var hotbar_item := _hotbar.get_selected_item()
 	
 	# These inputs have to be in _fixed_process because they rely on collision queries
-	if hotbar_item == null or hotbar_item.type == HotbarItem.TYPE_BLOCK:
+	if hotbar_item == null or hotbar_item.type == HotbarItem.TYPE_MATERIAL:
 		if hit != null:
 			var voxel_tool := _voxel_tool.voxel_tools[hit.terrain]
 			var hit_raw_id := voxel_tool.get_voxel(hit.raycast_result.position)
@@ -121,7 +115,7 @@ func _physics_process(_delta):
 			
 			if _action_use and has_voxel:
 				var pos := hit.raycast_result.position
-				_place_single_block(hit.terrain_index, pos, 0)
+				_erase_voxel(hit.terrain_index, pos)
 			
 			elif _action_place && hotbar_item != null:
 				var placement_terrain_index := _placement_scale - 1
@@ -134,7 +128,7 @@ func _physics_process(_delta):
 				# TODO: The collision area isn't necessarily going to be a whole cube voxel if e.g., the placed voxel is a stair shape
 				var placement_size := Vector3i.ONE * placement_terrain_scale
 				if not _voxel_tool.has_voxels_in_area(global_pos, placement_size):
-					_place_single_block(placement_terrain_index, pos, hotbar_item.id)
+					_place_voxel(placement_terrain_index, pos, hotbar_item.id)
 				else:
 					# Render voxel errors
 					var placement_collisions := _voxel_tool.get_voxels_in_area(global_pos, placement_size)
@@ -154,8 +148,8 @@ func _physics_process(_delta):
 	if _action_pick and hit != null:
 		var voxel_tool := _voxel_tool.voxel_tools[hit.terrain]
 		var hit_raw_id = voxel_tool.get_voxel(hit.raycast_result.position)
-		var rm := _block_types.get_raw_mapping(hit_raw_id)
-		_hotbar.try_select_slot_by_block_id(rm.block_id)
+		var mapping := _blocks.get_raw_mapping(hit_raw_id)
+		_hotbar.try_select_slot_by_material_id(mapping.material_id)
 
 	_action_place = false
 	_action_use = false
@@ -188,21 +182,35 @@ func _unhandled_input(event: InputEvent):
 				_placement_scale = maxi(_placement_scale - 1, 1)
 
 
-func _place_single_block(terrain_index: int, pos: Vector3, block_id: int):
-	var look_dir := -_head.get_transform().basis.z
+func _place_voxel(terrain_index: int, pos: Vector3i, material_id: int) -> void:
 	var mp := get_tree().get_multiplayer()
 	if mp.has_multiplayer_peer() and not mp.is_server():
-		rpc_id(SERVER_PEER_ID, &"receive_place_single_block", terrain_index, pos, look_dir, block_id)
+		rpc_id(SERVER_PEER_ID, &"receive_place_voxel", terrain_index, pos, material_id)
 	else:
 		var terrain := _multi_terrain.terrains[terrain_index]
 		var terrain_tool := _voxel_tool.voxel_tools[terrain]
-		InteractionCommon.place_single_block(terrain_tool, pos, look_dir,
-			block_id, _block_types, _water_updater)
+		InteractionCommon.place_voxel(terrain_tool, pos, material_id, _blocks)
+
+
+func _erase_voxel(terrain_index: int, pos: Vector3i) -> void:
+	var mp := get_tree().get_multiplayer()
+	if mp.has_multiplayer_peer() and not mp.is_server():
+		rpc_id(SERVER_PEER_ID, &"receive_erase_voxel", terrain_index, pos)
+	else:
+		var terrain := _multi_terrain.terrains[terrain_index]
+		var terrain_tool := _voxel_tool.voxel_tools[terrain]
+		InteractionCommon.erase_voxel(terrain_tool, pos)
 
 
 # TODO Maybe use `rpc_config` so this would be less awkward?
 @rpc("any_peer", "call_remote", "reliable", 0)
-func receive_place_single_block(terrain_index: int, pos: Vector3, look_dir: Vector3, block_id: int):
+func receive_place_voxel(terrain_index: int, pos: Vector3i, material_id: int) -> void:
+	# The server has a different script for remote players.
+	push_error("Didn't expect this method to be called")
+
+
+@rpc("any_peer", "call_remote", "reliable", 0)
+func receive_erase_voxel(terrain_index: int, pos: Vector3i) -> void:
 	# The server has a different script for remote players
 	push_error("Didn't expect this method to be called")
 

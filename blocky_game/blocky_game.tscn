@@ -4,7 +4,6 @@
 [ext_resource type="Script" uid="uid://bukhhnwyc247r" path="res://blocky_game/VoxelMultiTerrain.gd" id="4_rbe4n"]
 [ext_resource type="Script" uid="uid://b2sgbpc3ratxy" path="res://blocky_game/blocky_game.gd" id="5"]
 [ext_resource type="Script" uid="uid://dtcj8q73e4f6t" path="res://addons/lens_effects/lens_flare_compositor_effect.gd" id="5_iihdp"]
-[ext_resource type="VoxelBlockyLibrary" uid="uid://ctn2wqssoxvj5" path="res://blocky_game/blocks/voxel_library.tres" id="6_bxxj4"]
 [ext_resource type="Script" uid="uid://uo17jmrj0bdv" path="res://addons/lens_effects/world_environment.gd" id="6_d300o"]
 [ext_resource type="Texture2D" uid="uid://c4qaphqjslhv6" path="res://icon.svg" id="6_s4ggr"]
 [ext_resource type="Script" uid="uid://cxpgxknwub8b8" path="res://blocky_game/debug_info.gd" id="8"]
@@ -66,7 +65,6 @@ height_range = 100.0
 noise = SubResource("FastNoiseLite_rbe4n")
 
 [sub_resource type="VoxelMesherBlocky" id="VoxelMesherBlocky_rbe4n"]
-library = ExtResource("6_bxxj4")
 occlusion_darkness = 0.7
 
 [sub_resource type="Curve" id="Curve_ssdvb"]
@@ -86,7 +84,6 @@ noise = SubResource("FastNoiseLite_3o6mx")
 curve = SubResource("Curve_ssdvb")
 
 [sub_resource type="VoxelMesherBlocky" id="VoxelMesherBlocky_ssdvb"]
-library = ExtResource("6_bxxj4")
 
 [sub_resource type="Curve" id="Curve_ipn0x"]
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.6814159, 0.286215), 0.0, 0.0, 0, 0, Vector2(0.6843658, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
@@ -104,13 +101,11 @@ noise = SubResource("FastNoiseLite_vmukk")
 curve = SubResource("Curve_ipn0x")
 
 [sub_resource type="VoxelMesherBlocky" id="VoxelMesherBlocky_bxxj4"]
-library = ExtResource("6_bxxj4")
 occlusion_darkness = 0.9
 
 [sub_resource type="VoxelStreamMemory" id="VoxelStreamMemory_vmukk"]
 
 [sub_resource type="VoxelMesherBlocky" id="VoxelMesherBlocky_3o6mx"]
-library = ExtResource("6_bxxj4")
 occlusion_darkness = 0.9
 
 [sub_resource type="Curve" id="Curve_iihdp"]
@@ -130,19 +125,16 @@ noise = SubResource("FastNoiseLite_d300o")
 curve = SubResource("Curve_iihdp")
 
 [sub_resource type="VoxelMesherBlocky" id="VoxelMesherBlocky_vmukk"]
-library = ExtResource("6_bxxj4")
 occlusion_darkness = 0.9
 
 [sub_resource type="VoxelStreamMemory" id="VoxelStreamMemory_x2ref"]
 
 [sub_resource type="VoxelMesherBlocky" id="VoxelMesherBlocky_x2ref"]
-library = ExtResource("6_bxxj4")
 occlusion_darkness = 0.9
 
 [sub_resource type="VoxelStreamMemory" id="VoxelStreamMemory_d300o"]
 
 [sub_resource type="VoxelMesherBlocky" id="VoxelMesherBlocky_oycm1"]
-library = ExtResource("6_bxxj4")
 occlusion_darkness = 0.9
 
 [sub_resource type="Curve" id="Curve_x2ref"]
@@ -257,7 +249,6 @@ sun = NodePath("../DirectionalLight3D")
 
 [node name="VoxelMultiTerrain" type="Node3D" parent="." unique_id=407146468]
 script = ExtResource("4_rbe4n")
-library = ExtResource("6_bxxj4")
 
 [node name="VoxelTerrain1" type="VoxelTerrain" parent="VoxelMultiTerrain" unique_id=1860384841]
 generator = SubResource("VoxelGeneratorNoise2D_bxxj4")

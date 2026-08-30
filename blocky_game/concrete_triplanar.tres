@@ -1,8 +1,51 @@
-[gd_resource type="StandardMaterial3D" format=3 uid="uid://fj3rj2ik6ucq"]
+[gd_resource type="ShaderMaterial" format=3 uid="uid://fj3rj2ik6ucq"]
+
+[ext_resource type="Shader" uid="uid://baifl51dssjjr" path="res://blocky_game/concrete_triplanar.gdshader" id="1_shader"]
+[ext_resource type="Texture2D" uid="uid://c57raug1xnavu" path="res://blocky_game/Poliigon_ConcreteFloorPoured_7656_2k/Poliigon_ConcreteFloorPoured_7656_BaseColor.jpg" id="2_albedo"]
+[ext_resource type="Texture2D" uid="uid://qrpw30d3htt2" path="res://blocky_game/Poliigon_ConcreteFloorPoured_7656_2k/Poliigon_ConcreteFloorPoured_7656_Metallic.jpg" id="3_metallic"]
+[ext_resource type="Texture2D" uid="uid://dq4j3apo8km5i" path="res://blocky_game/Poliigon_ConcreteFloorPoured_7656_2k/Poliigon_ConcreteFloorPoured_7656_Roughness.jpg" id="4_roughness"]
+[ext_resource type="Texture2D" uid="uid://cl5fpynq1v62j" path="res://blocky_game/Poliigon_ConcreteFloorPoured_7656_2k/Poliigon_ConcreteFloorPoured_7656_Normal.png" id="5_normal"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_detail"]
+frequency = 0.02
+fractal_octaves = 10
+fractal_lacunarity = 1.5
+domain_warp_enabled = true
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_detail"]
+width = 1024
+height = 1024
+noise = SubResource("FastNoiseLite_detail")
+seamless = true
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_streak"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_streak"]
+width = 1024
+height = 1024
+noise = SubResource("FastNoiseLite_streak")
+seamless = true
 
 [resource]
-metallic = 1.0
-normal_enabled = true
-uv1_scale = Vector3(0.166, 0.166, 0.166)
-uv1_triplanar = true
-uv1_world_triplanar = true
+resource_name = "concrete"
+render_priority = 0
+shader = ExtResource("1_shader")
+shader_parameter/albedo = Color(0.823212, 0.823212, 0.823212, 1)
+shader_parameter/texture_albedo = ExtResource("2_albedo")
+shader_parameter/albedo_texture_size = Vector2i(1024, 1024)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/texture_metallic = ExtResource("3_metallic")
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = ExtResource("4_roughness")
+shader_parameter/specular = 0.4
+shader_parameter/metallic = 1.0
+shader_parameter/texture_normal = ExtResource("5_normal")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_blend_sharpness = 1.0
+shader_parameter/uv1_scale = Vector3(0.05, 0.05, 0.05)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+shader_parameter/noise = SubResource("NoiseTexture2D_detail")
+shader_parameter/streak_noise = SubResource("NoiseTexture2D_streak")

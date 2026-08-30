@@ -8,10 +8,8 @@ const SERVER_PEER_ID = 1
 
 const CharacterScene = preload("./player/character_avatar.tscn")
 const RemoteCharacterScene = preload("./player/remote_character.tscn")
-const RandomTicks = preload("./random_ticks.gd")
-const WaterUpdater = preload("./water.gd")
-
 @onready var _light: DirectionalLight3D = $DirectionalLight3D
+@onready var _blocks = $Blocks
 @onready var _multi_terrain: VoxelMultiTerrain = $VoxelMultiTerrain
 @onready var _characters_container: Node = $Players
 
@@ -55,6 +53,7 @@ func set_port(port: int):
 
 
 func _ready():
+	_multi_terrain.initialize(_blocks.get_model_library())
 	_multi_terrain.max_view_diatance = %Settings.view_distance * 32
 	
 	if _network_mode == NETWORK_MODE_HOST:
@@ -100,13 +99,6 @@ func _ready():
 		_multi_terrain.terrains[0].stream = null
 
 	if _network_mode == NETWORK_MODE_HOST or _network_mode == NETWORK_MODE_SINGLEPLAYER:
-		add_child(RandomTicks.new())
-		
-		var water_updater := WaterUpdater.new()
-		# Current code grabs this node by name, so must be named for now...
-		water_updater.name = "Water"
-		add_child(water_updater)
-		
 		_spawn_character(SERVER_PEER_ID, Vector3(0, 64, 0))
 
 

@@ -1,6 +1,0 @@
-[gd_resource type="VoxelGeneratorScript" format=3 uid="uid://bnc1gw6dc385s"]
-
-[ext_resource type="Script" uid="uid://dre7bep3u8ir6" path="res://blocky_game/generator/generator.gd" id="1"]
-
-[resource]
-script = ExtResource("1")

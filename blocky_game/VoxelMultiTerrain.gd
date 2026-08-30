@@ -2,7 +2,6 @@ extends Node3D
 class_name VoxelMultiTerrain
 
 
-const VOXEL_SCALE_SHADER_MATERIAL = preload("uid://cl8ftl3f0exim")
 ## This is the separation applied by VoxelBoxMover in terrain-local coordinates,
 ## visible as `EPSILON` in the Godot Voxel source here:
 ## https://github.com/Zylann/godot_voxel/blob/e74312304c2f9112728307aa7a778a8a44b5b9e5/terrain/fixed_lod/voxel_box_mover.cpp#L61
@@ -16,6 +15,8 @@ const _BOX_MOVER_COLLISION_MARGIN := 0.001
 		max_view_diatance = value
 		for terrain in terrains:
 			terrain.max_view_distance = value
+## Library shared with the child terrain meshers. It can be assigned in the
+## inspector or supplied with initialize() after this node becomes ready.
 @export var library: VoxelBlockyLibrary
 
 ## The VoxelTerrains within this MultiVoxelTerrain.
@@ -32,22 +33,28 @@ const _BOX_MOVER_COLLISION_MARGIN := 0.001
 ]
 
 var _box_mover := VoxelBoxMover.new()
+var _initialized := false
 
 
 func _ready() -> void:
 	_box_mover.set_collision_mask(1) # Excludes rails
 	_box_mover.set_step_climbing_enabled(true)
 	_box_mover.set_max_step_height(0.5)
-	
-	# Scale the model textures in the terrains based on the terrain scale
-	# TODO: This only works for dirt right now
+	if library != null:
+		initialize(library)
+
+
+## Bakes and assigns a library to every terrain mesher.
+## Use this when the library was not already assigned in the inspector.
+func initialize(model_library: VoxelBlockyLibrary) -> void:
+	assert(not _initialized, "VoxelMultiTerrain must only be initialized once")
+	assert(model_library != null)
+	library = model_library
+	library.bake()
 	for terrain in terrains:
-		var library_copy: VoxelBlockyLibrary = library.duplicate_deep()
-		#var voxel_scale_shader_material := VOXEL_SCALE_SHADER_MATERIAL.duplicate()
-		#voxel_scale_shader_material.set_shader_parameter("scale", terrain.scale.x)
-		#library_copy.models[1].set_material_override(0, voxel_scale_shader_material)
-		library_copy.bake()
-		terrain.mesher.library = library_copy
+		assert(terrain.mesher is VoxelMesherBlocky)
+		terrain.mesher.library = library
+	_initialized = true
 
 
 ## Creates an instance of VoxelToolMultiTerrain bound to this node, to access voxels and edition methods.

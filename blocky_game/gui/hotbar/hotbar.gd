@@ -8,7 +8,7 @@ const VISIBLE_SLOT_COUNT := 9
 const SELECTED_SLOT_INDEX := 4
 
 @onready var _slot_container = $HBoxContainer
-@onready var _block_types = get_node(^"/root/Main/Game/Blocks")
+@onready var _blocks = get_node(^"/root/Main/Game/Blocks")
 
 var _items: Array[HotbarItem] = []
 var _selected_item_index := 0
@@ -47,27 +47,27 @@ func remove_item_at(item_index: int) -> void:
 	items_changed.emit()
 
 
-func pin_material(block_id: int) -> void:
-	if is_material_pinned(block_id):
+func pin_material(material_id: int) -> void:
+	if is_material_pinned(material_id):
 		return
 
 	var item := HotbarItem.new()
-	item.type = HotbarItem.TYPE_BLOCK
-	item.id = block_id
+	item.type = HotbarItem.TYPE_MATERIAL
+	item.id = material_id
 	add_item(item)
 
 
-func unpin_material(block_id: int) -> void:
+func unpin_material(material_id: int) -> void:
 	for item_index in _items.size():
 		var item := _items[item_index]
-		if item != null and item.type == HotbarItem.TYPE_BLOCK and item.id == block_id:
+		if item != null and item.type == HotbarItem.TYPE_MATERIAL and item.id == material_id:
 			remove_item_at(item_index)
 			return
 
 
-func is_material_pinned(block_id: int) -> bool:
+func is_material_pinned(material_id: int) -> bool:
 	for item in _items:
-		if item != null and item.type == HotbarItem.TYPE_BLOCK and item.id == block_id:
+		if item != null and item.type == HotbarItem.TYPE_MATERIAL and item.id == material_id:
 			return true
 	return false
 
@@ -136,9 +136,8 @@ func _select_item(item_index: int) -> void:
 
 	var item := _items[_selected_item_index]
 	if is_node_ready() and item != null:
-		if item.type == HotbarItem.TYPE_BLOCK:
-			var block = _block_types.get_block(item.id)
-			print("Hotbar select block ", block.base_info.name)
+		if item.type == HotbarItem.TYPE_MATERIAL:
+			print("Hotbar select material ", _blocks.get_material_name(item.id))
 
 		elif item.type == HotbarItem.TYPE_ITEM:
 			# TODO Item db
@@ -151,10 +150,10 @@ func get_selected_item() -> HotbarItem:
 	return _items[_selected_item_index]
 
 
-func try_select_slot_by_block_id(block_id: int) -> void:
+func try_select_slot_by_material_id(material_id: int) -> void:
 	for item_index in _items.size():
 		var item := _items[item_index]
-		if item != null and item.type == HotbarItem.TYPE_BLOCK and item.id == block_id:
+		if item != null and item.type == HotbarItem.TYPE_MATERIAL and item.id == material_id:
 			_select_item(item_index)
 			return
 

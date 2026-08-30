@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://2fexqs2ivtll" path="res://blocky_game/gui/material_browser/material_slot.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://ou88l0fsjs1u" path="res://blocky_game/gui/hotbar/hotbar_slot_bg.png" id="2"]
-[ext_resource type="Texture2D" uid="uid://cbrlpwyada727" path="res://blocky_game/blocks/dirt/dirt_sprite.png" id="3"]
 [ext_resource type="Texture2D" uid="uid://c6dnsxwm3v303" path="res://blocky_game/gui/material_browser/Pin.svg" id="4"]
 
 [node name="MaterialSlot" type="Control"]
@@ -39,9 +38,17 @@ offset_top = 4.0
 offset_right = -4.0
 offset_bottom = -4.0
 mouse_filter = 2
-texture = ExtResource("3")
 expand_mode = 1
 stretch_mode = 4
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+text = "Material"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Pin" type="TextureRect" parent="."]
 visible = false
