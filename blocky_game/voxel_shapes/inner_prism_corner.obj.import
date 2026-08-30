@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://dg7pbcio4m153"
+path="res://.godot/imported/inner_prism_corner.obj-67db7c26ca0fa5f0c4ed7032da735eb7.mesh"
+
+[deps]
+
+files=["res://.godot/imported/inner_prism_corner.obj-67db7c26ca0fa5f0c4ed7032da735eb7.mesh"]
+
+source_file="res://blocky_game/voxel_shapes/inner_prism_corner.obj"
+dest_files=["res://.godot/imported/inner_prism_corner.obj-67db7c26ca0fa5f0c4ed7032da735eb7.mesh", "res://.godot/imported/inner_prism_corner.obj-67db7c26ca0fa5f0c4ed7032da735eb7.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

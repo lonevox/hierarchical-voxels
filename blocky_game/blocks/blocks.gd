@@ -189,6 +189,12 @@ func _register_shapes() -> void:
 			Vector3i.ZERO,
 			[AABB(Vector3.ZERO, Vector3(1.0, 0.5, 1.0))])
 	])
+	_register_shape(&"panel", [
+		ShapePart.new(
+			_load_mesh("%s/panel.obj" % SHAPE_ROOT),
+			Vector3i.ZERO,
+			[AABB(Vector3.ZERO, Vector3(1.0, 0.125, 1.0))])
+	])
 	_register_shape(&"stairs", [
 		ShapePart.new(
 			_load_mesh("%s/stairs.obj" % SHAPE_ROOT),
@@ -197,6 +203,30 @@ func _register_shapes() -> void:
 				AABB(Vector3.ZERO, Vector3(1.0, 0.5, 1.0)),
 				AABB(Vector3(0.0, 0.5, 0.0), Vector3(0.5, 0.5, 1.0)),
 			])
+	])
+	_register_shape(&"beam", [
+		ShapePart.new(
+			_load_mesh("%s/beam.obj" % SHAPE_ROOT),
+			Vector3i.ZERO,
+			[AABB(Vector3(0.0, 0.0, 0.25), Vector3(1.0, 0.3, 0.5))])
+	])
+	_register_shape(&"cylinder", [
+		ShapePart.new(
+			_load_mesh("%s/cylinder.obj" % SHAPE_ROOT),
+			Vector3i.ZERO,
+			[])
+	])
+	_register_shape(&"prism_corner", [
+		ShapePart.new(
+			_load_mesh("%s/prism_corner.obj" % SHAPE_ROOT),
+			Vector3i.ZERO,
+			[])
+	])
+	_register_shape(&"inner_prism_corner", [
+		ShapePart.new(
+			_load_mesh("%s/inner_prism_corner.obj" % SHAPE_ROOT),
+			Vector3i.ZERO,
+			[])
 	])
 
 	# A slope_N is one voxel wide and N voxels tall. Part 1 occupies the
