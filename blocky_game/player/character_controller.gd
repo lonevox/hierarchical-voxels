@@ -1,6 +1,8 @@
 extends Node3D
 class_name CharacterController
 
+const Hotbar = preload("../gui/hotbar/hotbar.gd")
+
 enum MovementState {
 	GROUNDED,
 	AIRBORNE,
@@ -25,6 +27,10 @@ var _voxel_tool: VoxelToolMultiTerrain
 var _velocity := Vector3()
 var _head: Node3D = null
 var _movement_state_machine: StateMachine
+
+
+func set_hotbar(hotbar: Hotbar) -> void:
+	$Interaction.set_hotbar(hotbar)
 
 
 func _ready():
@@ -182,8 +188,6 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_fly"):
 		var next_state := MovementState.AIRBORNE if _movement_state_machine.is_in_state(MovementState.FLYING) else MovementState.FLYING
 		_movement_state_machine.transition_to(next_state)
-	elif event.is_action_pressed("toggle_hud"):
-		%HUD.visible = !%HUD.visible
 
 
 @rpc("authority", "call_remote", "unreliable")

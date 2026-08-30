@@ -1,15 +1,21 @@
 class_name PlayerHUD
 extends Control
 
+const Hotbar = preload("./hotbar/hotbar.gd")
+
 enum State {
 	GAMEPLAY,
+	PAUSED,
 	MATERIAL_BROWSER,
 	RADIAL_MENU,
 }
 
 signal state_changed(state: int)
+signal quit_requested
 
 @onready var _crosshair: Control = $Crosshair
+@onready var _hotbar: Hotbar = $HotBar
+@onready var _pause_menu = $PauseMenu
 @onready var _material_browser = $MaterialBrowser
 @onready var _radial_menu: RadialMenu = $RadialMenu
 
@@ -18,8 +24,11 @@ var _gameplay_mouse_mode := Input.MOUSE_MODE_CAPTURED
 
 
 func _ready() -> void:
+	_pause_menu.quit_requested.connect(_on_pause_menu_quit_requested)
+
 	_state_machine = StateMachine.new(State.GAMEPLAY)
 	_state_machine.add_state(State.GAMEPLAY, _enter_gameplay, _exit_gameplay)
+	_state_machine.add_state(State.PAUSED, _enter_paused, _exit_paused)
 	_state_machine.add_state(State.MATERIAL_BROWSER, _enter_material_browser, _exit_material_browser)
 	_state_machine.add_state(State.RADIAL_MENU, _enter_radial_menu, _exit_radial_menu)
 	_state_machine.state_changed.connect(_on_state_changed)
@@ -39,6 +48,20 @@ func _input(event: InputEvent) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("toggle_hud"):
+		visible = !visible
+		get_viewport().set_input_as_handled()
+		return
+
+	if event.is_action_pressed("pause") and _state_machine.is_in_state(State.GAMEPLAY):
+		_state_machine.transition_to(State.PAUSED)
+		get_viewport().set_input_as_handled()
+		return
+	elif event.is_action_pressed("ui_close_dialog") and _state_machine.is_in_state(State.PAUSED):
+		_state_machine.transition_to(State.GAMEPLAY)
+		get_viewport().set_input_as_handled()
+		return
+
 	if event.is_action_pressed("toggle_material_browser"):
 		_toggle_material_browser()
 		get_viewport().set_input_as_handled()
@@ -69,6 +92,10 @@ func _toggle_material_browser() -> void:
 		_state_machine.transition_to(State.GAMEPLAY)
 
 
+func get_hotbar() -> Hotbar:
+	return _hotbar
+
+
 func _enter_gameplay() -> void:
 	_crosshair.visible = true
 	Input.set_mouse_mode(_gameplay_mouse_mode)
@@ -77,6 +104,15 @@ func _enter_gameplay() -> void:
 func _exit_gameplay() -> void:
 	_crosshair.visible = false
 	_gameplay_mouse_mode = Input.get_mouse_mode()
+
+
+func _enter_paused() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	_pause_menu.show()
+
+
+func _exit_paused() -> void:
+	_pause_menu.hide()
 
 
 func _enter_material_browser() -> void:
@@ -101,6 +137,5 @@ func _on_state_changed(_previous_state: int, current_state: int) -> void:
 	state_changed.emit(current_state)
 
 
-func _exit_tree() -> void:
-	if _state_machine != null and not _state_machine.is_in_state(State.GAMEPLAY):
-		Input.set_mouse_mode(_gameplay_mouse_mode)
+func _on_pause_menu_quit_requested() -> void:
+	quit_requested.emit()

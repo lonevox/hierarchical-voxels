@@ -1,0 +1,143 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://nlc6n2ehlntw" path="res://blocky_game/gui/hud.gd" id="1_hud"]
+[ext_resource type="Texture2D" uid="uid://c0wr4bmx2e43l" path="res://blocky_terrain/crosshair.png" id="2_crosshair"]
+[ext_resource type="PackedScene" uid="uid://bv2c3jwi46pfg" path="res://blocky_game/gui/hotbar/hotbar.tscn" id="3_hotbar"]
+[ext_resource type="PackedScene" uid="uid://bk5qyshelum5f" path="res://blocky_game/gui/pause_menu.tscn" id="4_pause"]
+[ext_resource type="PackedScene" uid="uid://cg54toj1o7c2u" path="res://blocky_game/gui/material_browser/material_browser.tscn" id="5_browser"]
+[ext_resource type="Script" uid="uid://88cgk7p5dxno" path="res://blocky_game/gui/radial_menu.gd" id="6_radial"]
+[ext_resource type="Script" uid="uid://dw7yjhsy5iq2j" path="res://blocky_game/gui/radial_menu_option.gd" id="7_option"]
+[ext_resource type="Texture2D" uid="uid://ceqay6m4yrspi" path="res://blocky_game/gui/placement_radial_menu/voxel.png" id="8_voxel"]
+[ext_resource type="Texture2D" uid="uid://cf1sf3x7appmw" path="res://blocky_game/gui/placement_radial_menu/line.png" id="9_line"]
+[ext_resource type="Texture2D" uid="uid://d0vab5ko712tx" path="res://blocky_game/gui/placement_radial_menu/wall.png" id="10_wall"]
+[ext_resource type="Texture2D" uid="uid://b2q4km1snhuhm" path="res://blocky_game/gui/placement_radial_menu/floor.png" id="11_floor"]
+[ext_resource type="Texture2D" uid="uid://cynjoy7xtjsgf" path="res://blocky_game/gui/placement_radial_menu/cuboid.png" id="12_cuboid"]
+[ext_resource type="Texture2D" uid="uid://fh85wnuelsp0" path="res://blocky_game/gui/placement_radial_menu/circle.png" id="13_circle"]
+[ext_resource type="Texture2D" uid="uid://ds8mm0d4uqu81" path="res://blocky_game/gui/placement_radial_menu/cylinder.png" id="14_cylinder"]
+[ext_resource type="Texture2D" uid="uid://0tvebc0fphdg" path="res://blocky_game/gui/placement_radial_menu/sphere.png" id="15_sphere"]
+[ext_resource type="Texture2D" uid="uid://b8hmqff3rddvp" path="res://blocky_game/gui/placement_radial_menu/pyramid.png" id="16_pyramid"]
+[ext_resource type="Texture2D" uid="uid://jk403ypgyaqw" path="res://blocky_game/gui/placement_radial_menu/cone.png" id="17_cone"]
+[ext_resource type="Texture2D" uid="uid://c4qaphqjslhv6" path="res://icon.svg" id="18_placeholder"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_radial"]
+font_size = 20
+
+[sub_resource type="Resource" id="Resource_voxel"]
+script = ExtResource("7_option")
+name = "Voxel"
+texture = ExtResource("8_voxel")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_line"]
+script = ExtResource("7_option")
+name = "Line"
+texture = ExtResource("9_line")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_wall"]
+script = ExtResource("7_option")
+name = "Wall"
+texture = ExtResource("10_wall")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_floor"]
+script = ExtResource("7_option")
+name = "Floor"
+texture = ExtResource("11_floor")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_cuboid"]
+script = ExtResource("7_option")
+name = "Cuboid"
+texture = ExtResource("12_cuboid")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_circle"]
+script = ExtResource("7_option")
+name = "Circle"
+texture = ExtResource("13_circle")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_cylinder"]
+script = ExtResource("7_option")
+name = "Cylinder"
+texture = ExtResource("14_cylinder")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_sphere"]
+script = ExtResource("7_option")
+name = "Sphere"
+texture = ExtResource("15_sphere")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_pyramid"]
+script = ExtResource("7_option")
+name = "Pyramid"
+texture = ExtResource("16_pyramid")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_cone"]
+script = ExtResource("7_option")
+name = "Cone"
+texture = ExtResource("17_cone")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_slope"]
+script = ExtResource("7_option")
+name = "Slope"
+texture = ExtResource("18_placeholder")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[sub_resource type="Resource" id="Resource_sloped_pyramid"]
+script = ExtResource("7_option")
+name = "Sloped Pyramid"
+texture = ExtResource("18_placeholder")
+metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
+
+[node name="HUD" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_hud")
+
+[node name="Crosshair" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TextureRect" type="TextureRect" parent="Crosshair"]
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("2_crosshair")
+
+[node name="HotBar" parent="." instance=ExtResource("3_hotbar")]
+layout_mode = 1
+offset_top = -64.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="PauseMenu" parent="." instance=ExtResource("4_pause")]
+visible = false
+layout_mode = 1
+
+[node name="MaterialBrowser" parent="." instance=ExtResource("5_browser")]
+visible = false
+layout_mode = 1
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.501961)
+
+[node name="RadialMenu" type="Node2D" parent="."]
+script = ExtResource("6_radial")
+label_settings = SubResource("LabelSettings_radial")
+center_option = SubResource("Resource_voxel")
+options = Array[ExtResource("7_option")]([SubResource("Resource_line"), SubResource("Resource_wall"), SubResource("Resource_floor"), SubResource("Resource_cuboid"), SubResource("Resource_circle"), SubResource("Resource_cylinder"), SubResource("Resource_sphere"), SubResource("Resource_pyramid"), SubResource("Resource_cone"), SubResource("Resource_slope"), SubResource("Resource_sloped_pyramid")])
+metadata/_custom_type_script = "uid://88cgk7p5dxno"

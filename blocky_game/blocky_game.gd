@@ -1,5 +1,7 @@
 extends Node
 
+signal quit_requested
+
 const NETWORK_MODE_SINGLEPLAYER = 0
 const NETWORK_MODE_CLIENT = 1
 const NETWORK_MODE_HOST = 2
@@ -12,6 +14,7 @@ const RemoteCharacterScene = preload("./player/remote_character.tscn")
 @onready var _blocks = $Blocks
 @onready var _multi_terrain: VoxelMultiTerrain = $VoxelMultiTerrain
 @onready var _characters_container: Node = $Players
+@onready var _hud: PlayerHUD = $HUD
 
 var _network_mode := NETWORK_MODE_SINGLEPLAYER
 var _ip := ""
@@ -53,6 +56,8 @@ func set_port(port: int):
 
 
 func _ready():
+	_hud.quit_requested.connect(_on_hud_quit_requested)
+
 	_multi_terrain.initialize(_blocks.get_model_library())
 	_multi_terrain.max_view_diatance = %Settings.view_distance * 32
 	
@@ -153,7 +158,11 @@ func _on_peer_disconnected(peer_id: int):
 
 func _on_server_disconnected():
 	_logger.debug("Server disconnected")
-	# TODO Go back to main menu, the game will spam RPC errors
+	quit_requested.emit()
+
+
+func _on_hud_quit_requested() -> void:
+	quit_requested.emit()
 
 
 func _unhandled_input(event: InputEvent):
@@ -177,7 +186,14 @@ func _notification(what: int):
 
 
 func _save_world():
-	_multi_terrain.terrains[0].save_modified_blocks()
+	var terrain := _multi_terrain.terrains[0]
+	if terrain.stream != null:
+		terrain.save_modified_blocks()
+
+
+func shutdown() -> void:
+	if _network_mode == NETWORK_MODE_HOST or _network_mode == NETWORK_MODE_SINGLEPLAYER:
+		_save_world()
 
 
 func _spawn_character(peer_id: int, pos: Vector3) -> Node3D:
@@ -189,6 +205,7 @@ func _spawn_character(peer_id: int, pos: Vector3) -> Node3D:
 	character.name = node_name
 	character.position = pos
 	character.multi_terrain_path = get_terrain().get_path()
+	character.set_hotbar(_hud.get_hotbar())
 	_characters_container.add_child(character)
 	return character
 

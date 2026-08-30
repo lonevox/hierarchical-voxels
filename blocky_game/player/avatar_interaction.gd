@@ -34,7 +34,6 @@ const _hotbar_keys = {
 
 # TODO Eventually invert these dependencies
 @onready var _head : Camera3D = get_parent().get_node("Camera")
-@onready var _hotbar : Hotbar = get_node("../HUD/HotBar")
 @onready var _blocks : Blocks = get_node("/root/Main/Game/Blocks")
 @onready var _item_db : ItemDB = get_node("/root/Main/Game/Items")
 @onready var _multi_terrain: VoxelMultiTerrain = get_node("/root/Main/Game/VoxelMultiTerrain")
@@ -42,6 +41,7 @@ const _hotbar_keys = {
 @onready var _voxel_highlight_manager: VoxelHighlightManager = get_node("/root/Main/Game/VoxelHighlightManager")
 
 var _cursor: MeshInstance3D = null
+var _hotbar: Hotbar
 var _action_place := false
 var _action_use := false
 var _action_pick := false
@@ -50,7 +50,13 @@ var _placement_scale := 1
 var _error_highlight: VoxelHighlight
 
 
+func set_hotbar(hotbar: Hotbar) -> void:
+	_hotbar = hotbar
+
+
 func _ready():
+	assert(_hotbar != null)
+
 	var mesh := Util.create_wirecube_mesh(Color(0,0,0))
 	var mesh_instance := MeshInstance3D.new()
 	mesh_instance.mesh = mesh
