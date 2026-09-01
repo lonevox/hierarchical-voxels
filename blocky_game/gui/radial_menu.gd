@@ -211,12 +211,17 @@ func _update_label() -> void:
 
 
 func _update_label_layout() -> void:
-	if _label == null or not _label.visible:
+	# Editor scene reloads can trigger a final minimum_size_changed callback after
+	# this node has left the scene tree, at which point it no longer has a viewport.
+	if not is_inside_tree() or _label == null or not _label.visible:
+		return
+	var viewport := get_viewport()
+	if viewport == null:
 		return
 
 	_label.reset_size()
 	var label_size := _label.size
-	var center := get_viewport().get_visible_rect().size / 2
+	var center := viewport.get_visible_rect().size / 2
 	var menu_outer_radius := radius + width / 2
 	_label.position = center + Vector2(-label_size.x / 2, menu_outer_radius + label_offset)
 
