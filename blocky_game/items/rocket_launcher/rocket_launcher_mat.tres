@@ -1,9 +1,0 @@
-[gd_resource type="StandardMaterial3D" format=3 uid="uid://dymudvsj3rin2"]
-
-[ext_resource type="Texture2D" uid="uid://csnr6w8h6rrta" path="res://blocky_game/items/rocket_launcher/rocket_launcher.png" id="1"]
-
-[resource]
-resource_name = "rocket_launcher_mat"
-cull_mode = 2
-albedo_texture = ExtResource("1")
-emission_enabled = true

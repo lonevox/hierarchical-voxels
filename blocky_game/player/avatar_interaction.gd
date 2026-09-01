@@ -2,9 +2,6 @@ extends Node
 
 const Util = preload("res://common/util.gd")
 const Blocks = preload("../blocks/blocks.gd")
-const ItemDB = preload("../items/item_db.gd")
-const HotbarItem = preload("./hotbar_item.gd")
-const Hotbar = preload("../gui/hotbar/hotbar.gd")
 const InteractionCommon = preload("./interaction_common.gd")
 
 const COLLISION_LAYER_AVATAR = 2
@@ -22,11 +19,7 @@ const _hotbar_keys = {
 	KEY_2: 1,
 	KEY_3: 2,
 	KEY_4: 3,
-	KEY_5: 4,
-	KEY_6: 5,
-	KEY_7: 6,
-	KEY_8: 7,
-	KEY_9: 8
+	KEY_5: 4
 }
 
 @export var terrain_path : NodePath
@@ -35,13 +28,12 @@ const _hotbar_keys = {
 # TODO Eventually invert these dependencies
 @onready var _head : Camera3D = get_parent().get_node("Camera")
 @onready var _blocks : Blocks = get_node("/root/Main/Game/Blocks")
-@onready var _item_db : ItemDB = get_node("/root/Main/Game/Items")
 @onready var _multi_terrain: VoxelMultiTerrain = get_node("/root/Main/Game/VoxelMultiTerrain")
 @onready var _voxel_tool := _multi_terrain.get_voxel_tool()
 @onready var _voxel_highlight_manager: VoxelHighlightManager = get_node("/root/Main/Game/VoxelHighlightManager")
 
 var _cursor: MeshInstance3D = null
-var _hotbar: Hotbar
+var _hud: PlayerHUD
 var _action_place := false
 var _action_use := false
 var _action_pick := false
@@ -50,12 +42,12 @@ var _placement_scale := 1
 var _error_highlight: VoxelHighlight
 
 
-func set_hotbar(hotbar: Hotbar) -> void:
-	_hotbar = hotbar
+func set_hud(hud: PlayerHUD) -> void:
+	_hud = hud
 
 
 func _ready():
-	assert(_hotbar != null)
+	assert(_hud != null)
 
 	var mesh := Util.create_wirecube_mesh(Color(0,0,0))
 	var mesh_instance := MeshInstance3D.new()
@@ -110,52 +102,48 @@ func _physics_process(_delta):
 		DDD.set_text("Global pointed voxel", "---")
 		DDD.set_text("Pointed voxel", "---")
 
-	var hotbar_item := _hotbar.get_selected_item()
+	var material_id := _hud.get_selected_material_id()
+	var shape_name := _hud.get_selected_shape_name()
 	
 	# These inputs have to be in _fixed_process because they rely on collision queries
-	if hotbar_item == null or hotbar_item.type == HotbarItem.TYPE_MATERIAL:
-		if hit != null:
-			var voxel_tool := _voxel_tool.voxel_tools[hit.terrain]
-			var hit_raw_id := voxel_tool.get_voxel(hit.raycast_result.position)
-			var has_voxel := hit_raw_id != 0
-			
-			if _action_use and has_voxel:
-				var pos := hit.raycast_result.position
-				_erase_voxel(hit.terrain_index, pos)
-			
-			elif _action_place && hotbar_item != null:
-				var placement_terrain_index := _placement_scale - 1
-				var placement_terrain := _multi_terrain.terrains[placement_terrain_index]
-				var placement_terrain_scale := int(placement_terrain.scale.x)
-				var global_pos := hit.global_previous_position[placement_terrain_index]
-				if has_voxel == false:
-					global_pos = hit.global_position[placement_terrain_index]
-				var pos := Vector3i(global_pos / placement_terrain_scale)
-				# TODO: The collision area isn't necessarily going to be a whole cube voxel if e.g., the placed voxel is a stair shape
-				var placement_size := Vector3i.ONE * placement_terrain_scale
-				if not _voxel_tool.has_voxels_in_area(global_pos, placement_size):
-					_place_voxel(placement_terrain_index, pos, hotbar_item.id)
-				else:
-					# Render voxel errors
-					var placement_collisions := _voxel_tool.get_voxels_in_area(global_pos, placement_size)
-					_error_highlight.set_voxels(placement_collisions)
-					_error_highlight.flash(Color.RED, ERROR_FADE_IN_DURATION, ERROR_HOLD_DURATION, ERROR_FADE_OUT_DURATION)
-					# Flash the cursor red
-					var tween := create_tween()
-					tween.tween_property(_cursor.material_override, "albedo_color", Color.RED, ERROR_FADE_IN_DURATION)
-					tween.tween_interval(ERROR_HOLD_DURATION)
-					tween.tween_property(_cursor.material_override, "albedo_color", Color.WHITE, ERROR_FADE_OUT_DURATION)
-	
-	elif hotbar_item.type == HotbarItem.TYPE_ITEM:
-		if _action_use:
-			var item = _item_db.get_item(hotbar_item.id)
-			item.use(_head.global_transform)
+	if hit != null:
+		var voxel_tool := _voxel_tool.voxel_tools[hit.terrain]
+		var hit_raw_id := voxel_tool.get_voxel(hit.raycast_result.position)
+		var has_voxel := hit_raw_id != 0
+
+		if _action_use and has_voxel:
+			var pos := hit.raycast_result.position
+			_erase_voxel(hit.terrain_index, pos)
+
+		elif _action_place and material_id != -1:
+			var placement_terrain_index := _placement_scale - 1
+			var placement_terrain := _multi_terrain.terrains[placement_terrain_index]
+			var placement_terrain_scale := int(placement_terrain.scale.x)
+			var global_pos := hit.global_previous_position[placement_terrain_index]
+			if has_voxel == false:
+				global_pos = hit.global_position[placement_terrain_index]
+			var pos := Vector3i(global_pos / placement_terrain_scale)
+			# TODO: The collision area isn't necessarily going to be a whole cube voxel if e.g., the placed voxel is a stair shape
+			var placement_size := Vector3i.ONE * placement_terrain_scale
+			if not _voxel_tool.has_voxels_in_area(global_pos, placement_size):
+				_place_voxel(placement_terrain_index, pos, material_id, shape_name)
+			else:
+				# Render voxel errors
+				var placement_collisions := _voxel_tool.get_voxels_in_area(global_pos, placement_size)
+				_error_highlight.set_voxels(placement_collisions)
+				_error_highlight.flash(Color.RED, ERROR_FADE_IN_DURATION, ERROR_HOLD_DURATION, ERROR_FADE_OUT_DURATION)
+				# Flash the cursor red
+				var tween := create_tween()
+				tween.tween_property(_cursor.material_override, "albedo_color", Color.RED, ERROR_FADE_IN_DURATION)
+				tween.tween_interval(ERROR_HOLD_DURATION)
+				tween.tween_property(_cursor.material_override, "albedo_color", Color.WHITE, ERROR_FADE_OUT_DURATION)
 	
 	if _action_pick and hit != null:
 		var voxel_tool := _voxel_tool.voxel_tools[hit.terrain]
 		var hit_raw_id = voxel_tool.get_voxel(hit.raycast_result.position)
 		var mapping := _blocks.get_raw_mapping(hit_raw_id)
-		_hotbar.try_select_slot_by_material_id(mapping.material_id)
+		_hud.try_select_material(mapping.material_id)
+		_hud.try_select_shape(mapping.shape_name)
 
 	_action_place = false
 	_action_use = false
@@ -173,29 +161,41 @@ func _unhandled_input(event: InputEvent):
 				MOUSE_BUTTON_MIDDLE:
 					_action_pick = true
 				MOUSE_BUTTON_WHEEL_DOWN:
-					_hotbar.select_next_slot()
+					_hud.select_next_hotbar_slot()
 				MOUSE_BUTTON_WHEEL_UP:
-					_hotbar.select_previous_slot()
+					_hud.select_previous_hotbar_slot()
 
 	elif event is InputEventKey:
 		if event.pressed:
 			if _hotbar_keys.has(event.keycode):
 				var slot_index = _hotbar_keys[event.keycode]
-				_hotbar.select_slot(slot_index)
+				_hud.select_hotbar_slot(slot_index)
 			elif event.keycode == KEY_EQUAL:
 				_placement_scale = mini(_placement_scale + 1, _multi_terrain.terrains.size())
 			elif event.keycode == KEY_MINUS:
 				_placement_scale = maxi(_placement_scale - 1, 1)
 
 
-func _place_voxel(terrain_index: int, pos: Vector3i, material_id: int) -> void:
+func _place_voxel(
+		terrain_index: int,
+		pos: Vector3i,
+		material_id: int,
+		shape_name: StringName
+	) -> void:
 	var mp := get_tree().get_multiplayer()
 	if mp.has_multiplayer_peer() and not mp.is_server():
-		rpc_id(SERVER_PEER_ID, &"receive_place_voxel", terrain_index, pos, material_id)
+		rpc_id(
+			SERVER_PEER_ID,
+			&"receive_place_voxel",
+			terrain_index,
+			pos,
+			material_id,
+			shape_name
+		)
 	else:
 		var terrain := _multi_terrain.terrains[terrain_index]
 		var terrain_tool := _voxel_tool.voxel_tools[terrain]
-		InteractionCommon.place_voxel(terrain_tool, pos, material_id, _blocks)
+		InteractionCommon.place_voxel(terrain_tool, pos, material_id, _blocks, shape_name)
 
 
 func _erase_voxel(terrain_index: int, pos: Vector3i) -> void:
@@ -210,7 +210,12 @@ func _erase_voxel(terrain_index: int, pos: Vector3i) -> void:
 
 # TODO Maybe use `rpc_config` so this would be less awkward?
 @rpc("any_peer", "call_remote", "reliable", 0)
-func receive_place_voxel(terrain_index: int, pos: Vector3i, material_id: int) -> void:
+func receive_place_voxel(
+		terrain_index: int,
+		pos: Vector3i,
+		material_id: int,
+		shape_name: StringName
+	) -> void:
 	# The server has a different script for remote players.
 	push_error("Didn't expect this method to be called")
 

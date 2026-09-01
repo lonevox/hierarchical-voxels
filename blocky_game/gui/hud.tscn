@@ -1,4 +1,4 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://cmm22tnt08g5h"]
 
 [ext_resource type="Script" uid="uid://nlc6n2ehlntw" path="res://blocky_game/gui/hud.gd" id="1_hud"]
 [ext_resource type="Texture2D" uid="uid://c0wr4bmx2e43l" path="res://blocky_terrain/crosshair.png" id="2_crosshair"]
@@ -94,7 +94,7 @@ name = "Sloped Pyramid"
 texture = ExtResource("18_placeholder")
 metadata/_custom_type_script = "uid://dw7yjhsy5iq2j"
 
-[node name="HUD" type="Control"]
+[node name="HUD" type="Control" unique_id=203693381]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -104,7 +104,7 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_hud")
 
-[node name="Crosshair" type="CenterContainer" parent="."]
+[node name="Crosshair" type="CenterContainer" parent="." unique_id=2095911768]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -113,31 +113,53 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="TextureRect" type="TextureRect" parent="Crosshair"]
+[node name="TextureRect" type="TextureRect" parent="Crosshair" unique_id=2050660631]
 layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("2_crosshair")
 
-[node name="HotBar" parent="." instance=ExtResource("3_hotbar")]
+[node name="HotBars" type="CenterContainer" parent="." unique_id=1478516428]
 layout_mode = 1
-offset_top = -64.0
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -388.0
+offset_top = -84.0
+offset_right = 388.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="PauseMenu" parent="." instance=ExtResource("4_pause")]
+[node name="HBoxContainer" type="HBoxContainer" parent="HotBars" unique_id=429493569]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="MaterialHotBar" parent="HotBars/HBoxContainer" unique_id=257747003 instance=ExtResource("3_hotbar")]
+self_modulate = Color(1, 1, 1, 1)
+layout_mode = 2
+selected = true
+
+[node name="ShapeHotBar" parent="HotBars/HBoxContainer" unique_id=1263695859 instance=ExtResource("3_hotbar")]
+layout_mode = 2
+
+[node name="PauseMenu" parent="." unique_id=220727719 instance=ExtResource("4_pause")]
 visible = false
 layout_mode = 1
 
-[node name="MaterialBrowser" parent="." instance=ExtResource("5_browser")]
+[node name="MaterialBrowser" parent="." unique_id=921219098 instance=ExtResource("5_browser")]
 visible = false
 layout_mode = 1
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.501961)
 
-[node name="RadialMenu" type="Node2D" parent="."]
+[node name="RadialMenu" type="Node2D" parent="." unique_id=759195438]
 script = ExtResource("6_radial")
 label_settings = SubResource("LabelSettings_radial")
 center_option = SubResource("Resource_voxel")
 options = Array[ExtResource("7_option")]([SubResource("Resource_line"), SubResource("Resource_wall"), SubResource("Resource_floor"), SubResource("Resource_cuboid"), SubResource("Resource_circle"), SubResource("Resource_cylinder"), SubResource("Resource_sphere"), SubResource("Resource_pyramid"), SubResource("Resource_cone"), SubResource("Resource_slope"), SubResource("Resource_sloped_pyramid")])
 metadata/_custom_type_script = "uid://88cgk7p5dxno"
+
+[connection signal="items_changed" from="HotBars/HBoxContainer/MaterialHotBar" to="." method="_on_hotbar_items_changed"]
+[connection signal="material_pressed" from="MaterialBrowser" to="." method="_on_material_browser_material_pressed"]

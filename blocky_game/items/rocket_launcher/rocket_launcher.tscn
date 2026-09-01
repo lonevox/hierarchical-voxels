@@ -1,5 +1,0 @@
-[gd_scene format=3 uid="uid://dl666qcudw2kv"]
-
-[ext_resource type="PackedScene" uid="uid://cv3fuj2gwpej3" path="res://blocky_game/items/rocket_launcher/rocket_launcher.gltf" id="1"]
-
-[node name="RocketLauncher" unique_id=1861743739 instance=ExtResource("1")]

@@ -46,10 +46,13 @@ class ShapeDefinition:
 	var name: StringName
 	var parts: Array[ShapePart]
 	var rotations: Array[ShapeRotation] = []
+	## Multi-voxel shapes have one part for each occupied voxel.
+	var is_multi_voxel: bool
 
 	func _init(shape_name: StringName, shape_parts: Array[ShapePart]) -> void:
 		name = shape_name
 		parts = shape_parts
+		is_multi_voxel = shape_parts.size() > 1
 
 
 class RawMapping:
@@ -107,6 +110,24 @@ func get_material(material_name: StringName) -> Material:
 
 func get_shape_names() -> Array[StringName]:
 	return _shape_order.duplicate()
+
+
+func get_single_voxel_shape_names() -> Array[StringName]:
+	var shape_names: Array[StringName] = []
+	for shape_name in _shape_order:
+		if not _shapes[shape_name].is_multi_voxel:
+			shape_names.append(shape_name)
+	return shape_names
+
+
+func get_shape_mesh(shape_name: StringName) -> Mesh:
+	var shape := _get_shape(shape_name)
+	assert(not shape.is_multi_voxel, "A multi-voxel shape has more than one mesh")
+	return shape.parts[0].mesh
+
+
+func is_shape_multi_voxel(shape_name: StringName) -> bool:
+	return _get_shape(shape_name).is_multi_voxel
 
 
 func get_rotation_count(shape_name: StringName) -> int:

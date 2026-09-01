@@ -2,6 +2,7 @@ class_name PlayerHUD
 extends Control
 
 const Hotbar = preload("./hotbar/hotbar.gd")
+const Blocks = preload("../blocks/blocks.gd")
 
 enum State {
 	GAMEPLAY,
@@ -14,17 +15,24 @@ signal state_changed(state: int)
 signal quit_requested
 
 @onready var _crosshair: Control = $Crosshair
-@onready var _hotbar: Hotbar = $HotBar
+@onready var _blocks: Blocks = get_node(^"/root/Main/Game/Blocks")
+@onready var _material_hotbar: Hotbar = $HotBars/HBoxContainer/MaterialHotBar
+@onready var _shape_hotbar: Hotbar = $HotBars/HBoxContainer/ShapeHotBar
 @onready var _pause_menu = $PauseMenu
 @onready var _material_browser = $MaterialBrowser
 @onready var _radial_menu: RadialMenu = $RadialMenu
 
 var _state_machine: StateMachine
 var _gameplay_mouse_mode := Input.MOUSE_MODE_CAPTURED
+var _selected_hotbar: Hotbar
+var _shape_items: Dictionary[StringName, SlotItem3D] = {}
 
 
 func _ready() -> void:
 	_pause_menu.quit_requested.connect(_on_pause_menu_quit_requested)
+	_populate_shape_hotbar()
+	_select_hotbar(_material_hotbar)
+	_update_material_pin_icons()
 
 	_state_machine = StateMachine.new(State.GAMEPLAY)
 	_state_machine.add_state(State.GAMEPLAY, _enter_gameplay, _exit_gameplay)
@@ -62,6 +70,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 
+	if event.is_action_pressed("switch_hotbar") and _state_machine.is_in_state(State.GAMEPLAY):
+		_switch_hotbar()
+		get_viewport().set_input_as_handled()
+		return
+
 	if event.is_action_pressed("toggle_material_browser"):
 		_toggle_material_browser()
 		get_viewport().set_input_as_handled()
@@ -93,7 +106,67 @@ func _toggle_material_browser() -> void:
 
 
 func get_hotbar() -> Hotbar:
-	return _hotbar
+	return _selected_hotbar
+
+
+func get_selected_material_id() -> int:
+	return _material_browser.get_material_id(_material_hotbar.get_selected_item())
+
+
+func get_selected_shape_name() -> StringName:
+	var item := _shape_hotbar.get_selected_item()
+	for shape_name in _shape_items:
+		if _shape_items[shape_name] == item:
+			return shape_name
+	return Blocks.DEFAULT_SHAPE
+
+
+func try_select_material(material_id: int) -> void:
+	var item: SlotItem = _material_browser.get_material_item(material_id)
+	if item != null:
+		_material_hotbar.try_select_item(item)
+
+
+func try_select_shape(shape_name: StringName) -> void:
+	if _shape_items.has(shape_name):
+		_shape_hotbar.try_select_item(_shape_items[shape_name])
+
+
+func select_hotbar_slot(slot_index: int) -> void:
+	_selected_hotbar.select_slot(slot_index)
+
+
+func select_next_hotbar_slot() -> void:
+	_selected_hotbar.select_next_slot()
+
+
+func select_previous_hotbar_slot() -> void:
+	_selected_hotbar.select_previous_slot()
+
+
+func _populate_shape_hotbar() -> void:
+	var items: Array[SlotItem] = []
+	for shape_name in _blocks.get_single_voxel_shape_names():
+		var item := SlotItem3D.new()
+		item.mesh = _blocks.get_shape_mesh(shape_name)
+		item.material = null
+		_shape_items[shape_name] = item
+		items.append(item)
+	_shape_hotbar.set_items(items)
+	assert(_shape_items.has(Blocks.DEFAULT_SHAPE))
+	_shape_hotbar.try_select_item(_shape_items[Blocks.DEFAULT_SHAPE])
+
+
+func _select_hotbar(hotbar: Hotbar) -> void:
+	_selected_hotbar = hotbar
+	_material_hotbar.selected = hotbar == _material_hotbar
+	_shape_hotbar.selected = hotbar == _shape_hotbar
+
+
+func _switch_hotbar() -> void:
+	_select_hotbar(
+		_shape_hotbar if _selected_hotbar == _material_hotbar else _material_hotbar
+	)
 
 
 func _enter_gameplay() -> void:
@@ -139,3 +212,21 @@ func _on_state_changed(_previous_state: int, current_state: int) -> void:
 
 func _on_pause_menu_quit_requested() -> void:
 	quit_requested.emit()
+
+
+func _on_material_browser_material_pressed(material_id: int) -> void:
+	var item: SlotItem = _material_browser.get_material_item(material_id)
+	if item == null:
+		return
+	if not _material_hotbar.remove_item(item):
+		_material_hotbar.add_item(item)
+
+
+func _on_hotbar_items_changed() -> void:
+	_update_material_pin_icons()
+
+
+func _update_material_pin_icons() -> void:
+	for material_id in _material_browser.get_material_ids():
+		var item: SlotItem = _material_browser.get_material_item(material_id)
+		_material_browser.set_material_pinned(material_id, _material_hotbar.has_item(item))

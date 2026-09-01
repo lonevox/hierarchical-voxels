@@ -1,0 +1,101 @@
+[gd_scene format=3 uid="uid://b7sb3tjlrpe5j"]
+
+[ext_resource type="Script" uid="uid://d0ewx888k4de2" path="res://blocky_game/gui/slot/slot.gd" id="1_a7ur5"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rltrk"]
+bg_color = Color(0, 0, 0, 0.5019608)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_71oqo"]
+draw_center = false
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.9, 0.9, 0.9, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="Environment" id="Environment_vww1n"]
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.1
+
+[sub_resource type="World3D" id="World3D_mum2e"]
+environment = SubResource("Environment_vww1n")
+
+[node name="Slot" type="MarginContainer" unique_id=178735288]
+custom_minimum_size = Vector2(68, 68)
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_default_cursor_shape = 2
+script = ExtResource("1_a7ur5")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1408736519]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 2
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 2
+theme_override_constants/margin_bottom = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="MarginContainer" unique_id=1685756634]
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_rltrk")
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer" unique_id=1782942319]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/MarginContainer" unique_id=975647517]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 4
+
+[node name="OutlinePanel" type="Panel" parent="." unique_id=758404351]
+unique_name_in_owner = true
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_71oqo")
+
+[node name="IconTextureRect" type="TextureRect" parent="." unique_id=844741052]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+mouse_filter = 2
+
+[node name="SubViewport" type="SubViewport" parent="." unique_id=864594388]
+unique_name_in_owner = true
+own_world_3d = true
+world_3d = SubResource("World3D_mum2e")
+transparent_bg = true
+msaa_3d = 2
+size = Vector2i(56, 56)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SubViewport" unique_id=354029057]
+unique_name_in_owner = true
+cast_shadow = 0
+
+[node name="Camera3D" type="Camera3D" parent="SubViewport" unique_id=1496708123]
+transform = Transform3D(0.70710677, -0.40860704, 0.5770964, 0, 0.8161376, 0.5778576, -0.70710677, -0.40860704, 0.5770964, 1, 1, 1)
+projection = 1
+size = 1.7
+near = 0.001
+far = 2.0
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="SubViewport" unique_id=1377156532]
+transform = Transform3D(0.9659258, -0.22414388, 0.1294095, 0, 0.49999997, 0.86602545, -0.25881904, -0.8365163, 0.48296288, 0, 2, 0)

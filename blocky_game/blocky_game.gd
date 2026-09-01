@@ -205,7 +205,7 @@ func _spawn_character(peer_id: int, pos: Vector3) -> Node3D:
 	character.name = node_name
 	character.position = pos
 	character.multi_terrain_path = get_terrain().get_path()
-	character.set_hotbar(_hud.get_hotbar())
+	character.set_hud(_hud)
 	_characters_container.add_child(character)
 	return character
 

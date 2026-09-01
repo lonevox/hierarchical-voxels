@@ -1,8 +1,6 @@
 extends Node3D
 class_name CharacterController
 
-const Hotbar = preload("../gui/hotbar/hotbar.gd")
-
 enum MovementState {
 	GROUNDED,
 	AIRBORNE,
@@ -29,8 +27,8 @@ var _head: Node3D = null
 var _movement_state_machine: StateMachine
 
 
-func set_hotbar(hotbar: Hotbar) -> void:
-	$Interaction.set_hotbar(hotbar)
+func set_hud(hud: PlayerHUD) -> void:
+	$Interaction.set_hud(hud)
 
 
 func _ready():

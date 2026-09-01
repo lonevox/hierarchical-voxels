@@ -1,35 +1,49 @@
-extends CenterContainer
+@tool
+extends Container
 
 signal items_changed
 
-const HotbarItem = preload("../../player/hotbar_item.gd")
+const Slot = preload("../slot/slot.gd")
+const VISIBLE_SLOT_COUNT := 5
+const SELECTED_SLOT_INDEX := 2
 
-const VISIBLE_SLOT_COUNT := 9
-const SELECTED_SLOT_INDEX := 4
+@export var selected := false:
+	set(value):
+		selected = value
+		self_modulate = Color.WHITE if selected else Color.TRANSPARENT
 
-@onready var _slot_container = $HBoxContainer
-@onready var _blocks = get_node(^"/root/Main/Game/Blocks")
+@onready var _slot_container: HBoxContainer = %HBoxContainer
 
-var _items: Array[HotbarItem] = []
+var _items: Array[SlotItem] = []
 var _selected_item_index := 0
 
 
 func _ready() -> void:
 	assert(_slot_container.get_child_count() == VISIBLE_SLOT_COUNT)
+	self_modulate = Color.WHITE if selected else Color.TRANSPARENT
 	_update_views()
 
 
-func set_items(items: Array[HotbarItem]) -> void:
+func set_items(items: Array[SlotItem]) -> void:
 	_items = items.duplicate()
 	_selected_item_index = 0
 	_update_views_if_ready()
 	items_changed.emit()
 
 
-func add_item(item: HotbarItem) -> void:
+func add_item(item: SlotItem) -> void:
+	assert(item != null)
 	_items.append(item)
 	_update_views_if_ready()
 	items_changed.emit()
+
+
+func remove_item(item: SlotItem) -> bool:
+	var item_index := _items.find(item)
+	if item_index == -1:
+		return false
+	remove_item_at(item_index)
+	return true
 
 
 func remove_item_at(item_index: int) -> void:
@@ -47,29 +61,8 @@ func remove_item_at(item_index: int) -> void:
 	items_changed.emit()
 
 
-func pin_material(material_id: int) -> void:
-	if is_material_pinned(material_id):
-		return
-
-	var item := HotbarItem.new()
-	item.type = HotbarItem.TYPE_MATERIAL
-	item.id = material_id
-	add_item(item)
-
-
-func unpin_material(material_id: int) -> void:
-	for item_index in _items.size():
-		var item := _items[item_index]
-		if item != null and item.type == HotbarItem.TYPE_MATERIAL and item.id == material_id:
-			remove_item_at(item_index)
-			return
-
-
-func is_material_pinned(material_id: int) -> bool:
-	for item in _items:
-		if item != null and item.type == HotbarItem.TYPE_MATERIAL and item.id == material_id:
-			return true
-	return false
+func has_item(item: SlotItem) -> bool:
+	return item in _items
 
 
 func get_item_count() -> int:
@@ -84,8 +77,8 @@ func _update_views_if_ready() -> void:
 func _update_views() -> void:
 	if _items.is_empty():
 		for slot_index in VISIBLE_SLOT_COUNT:
-			var slot_view = _slot_container.get_child(slot_index)
-			slot_view.get_display().set_item(null)
+			var slot_view: Slot = _slot_container.get_child(slot_index)
+			slot_view.slot_item = null
 		return
 
 	var visible_item_count := mini(_items.size(), VISIBLE_SLOT_COUNT)
@@ -96,21 +89,21 @@ func _update_views() -> void:
 	var right_item_count := visible_item_count - left_item_count - 1
 
 	for slot_index in VISIBLE_SLOT_COUNT:
-		var item: HotbarItem = null
+		var item: SlotItem = null
 		var offset := slot_index - SELECTED_SLOT_INDEX
 		if offset >= -left_item_count and offset <= right_item_count:
 			var item_index := posmod(_selected_item_index + offset, _items.size())
 			item = _items[item_index]
 
-		var slot_view = _slot_container.get_child(slot_index)
-		slot_view.get_display().set_item(item)
+		var slot_view: Slot = _slot_container.get_child(slot_index)
+		slot_view.slot_item = item
 
 
 ## Rotates the item currently displayed in slot [param slot_index] into the
 ## selected center slot. Empty visible slots do nothing.
 func select_slot(slot_index: int) -> void:
 	assert(slot_index >= 0 and slot_index < VISIBLE_SLOT_COUNT)
-	if _items.is_empty():
+	if not selected or _items.is_empty():
 		return
 
 	var visible_item_count := mini(_items.size(), VISIBLE_SLOT_COUNT)
@@ -134,33 +127,26 @@ func _select_item(item_index: int) -> void:
 	_selected_item_index = item_index
 	_update_views_if_ready()
 
-	var item := _items[_selected_item_index]
-	if is_node_ready() and item != null:
-		if item.type == HotbarItem.TYPE_MATERIAL:
-			print("Hotbar select material ", _blocks.get_material_name(item.id))
 
-		elif item.type == HotbarItem.TYPE_ITEM:
-			# TODO Item db
-			print("Hotbar select item ", item.id)
-
-
-func get_selected_item() -> HotbarItem:
+func get_selected_item() -> SlotItem:
 	if _items.is_empty():
 		return null
 	return _items[_selected_item_index]
 
 
-func try_select_slot_by_material_id(material_id: int) -> void:
-	for item_index in _items.size():
-		var item := _items[item_index]
-		if item != null and item.type == HotbarItem.TYPE_MATERIAL and item.id == material_id:
-			_select_item(item_index)
-			return
+func try_select_item(item: SlotItem) -> bool:
+	var item_index := _items.find(item)
+	if item_index == -1:
+		return false
+	_select_item(item_index)
+	return true
 
 
 func select_next_slot() -> void:
-	_select_item(_selected_item_index + 1)
+	if selected:
+		_select_item(_selected_item_index + 1)
 
 
 func select_previous_slot() -> void:
-	_select_item(_selected_item_index - 1)
+	if selected:
+		_select_item(_selected_item_index - 1)
