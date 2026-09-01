@@ -5,6 +5,7 @@
 ## parts make multi-voxel shapes (such as the tall slopes) explicit without
 ## making their callers know how model IDs are laid out in the library.
 extends Node
+class_name Blocks
 
 const AIR_ID := 0
 const DEFAULT_MATERIAL: StringName = &"concrete"

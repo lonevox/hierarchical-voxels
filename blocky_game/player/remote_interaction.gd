@@ -1,6 +1,5 @@
 extends Node
 
-const Blocks = preload("../blocks/blocks.gd")
 const InteractionCommon = preload("./interaction_common.gd")
 
 @export var terrain_path : NodePath

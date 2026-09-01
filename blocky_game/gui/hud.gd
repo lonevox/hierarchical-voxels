@@ -1,9 +1,6 @@
 class_name PlayerHUD
 extends Control
 
-const Hotbar = preload("./hotbar/hotbar.gd")
-const Blocks = preload("../blocks/blocks.gd")
-
 enum State {
 	GAMEPLAY,
 	PAUSED,
@@ -14,13 +11,13 @@ enum State {
 signal state_changed(state: int)
 signal quit_requested
 
-@onready var _crosshair: Control = $Crosshair
+@onready var _crosshair: Control = %Crosshair
 @onready var _blocks: Blocks = get_node(^"/root/Main/Game/Blocks")
-@onready var _material_hotbar: Hotbar = $HotBars/HBoxContainer/MaterialHotBar
-@onready var _shape_hotbar: Hotbar = $HotBars/HBoxContainer/ShapeHotBar
-@onready var _pause_menu = $PauseMenu
-@onready var _material_browser = $MaterialBrowser
-@onready var _radial_menu: RadialMenu = $RadialMenu
+@onready var _material_hotbar: Hotbar = %MaterialHotbar
+@onready var _shape_hotbar: Hotbar = %ShapeHotbar
+@onready var _pause_menu = %PauseMenu
+@onready var _material_browser = %MaterialBrowser
+@onready var _radial_menu: RadialMenu = %RadialMenu
 
 var _state_machine: StateMachine
 var _gameplay_mouse_mode := Input.MOUSE_MODE_CAPTURED

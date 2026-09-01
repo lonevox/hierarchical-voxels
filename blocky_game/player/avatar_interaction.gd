@@ -1,7 +1,6 @@
 extends Node
 
 const Util = preload("res://common/util.gd")
-const Blocks = preload("../blocks/blocks.gd")
 const InteractionCommon = preload("./interaction_common.gd")
 
 const COLLISION_LAYER_AVATAR = 2

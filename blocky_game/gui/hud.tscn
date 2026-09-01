@@ -105,6 +105,7 @@ mouse_filter = 2
 script = ExtResource("1_hud")
 
 [node name="Crosshair" type="CenterContainer" parent="." unique_id=2095911768]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -118,7 +119,7 @@ layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("2_crosshair")
 
-[node name="HotBars" type="CenterContainer" parent="." unique_id=1478516428]
+[node name="Hotbars" type="CenterContainer" parent="." unique_id=1478516428]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -131,23 +132,27 @@ offset_right = 388.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HotBars" unique_id=429493569]
+[node name="HBoxContainer" type="HBoxContainer" parent="Hotbars" unique_id=429493569]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="MaterialHotBar" parent="HotBars/HBoxContainer" unique_id=257747003 instance=ExtResource("3_hotbar")]
+[node name="MaterialHotbar" parent="Hotbars/HBoxContainer" unique_id=257747003 instance=ExtResource("3_hotbar")]
+unique_name_in_owner = true
 self_modulate = Color(1, 1, 1, 1)
 layout_mode = 2
 selected = true
 
-[node name="ShapeHotBar" parent="HotBars/HBoxContainer" unique_id=1263695859 instance=ExtResource("3_hotbar")]
+[node name="ShapeHotbar" parent="Hotbars/HBoxContainer" unique_id=1263695859 instance=ExtResource("3_hotbar")]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="PauseMenu" parent="." unique_id=220727719 instance=ExtResource("4_pause")]
+unique_name_in_owner = true
 visible = false
 layout_mode = 1
 
 [node name="MaterialBrowser" parent="." unique_id=921219098 instance=ExtResource("5_browser")]
+unique_name_in_owner = true
 visible = false
 layout_mode = 1
 grow_horizontal = 2
@@ -155,11 +160,12 @@ grow_vertical = 2
 color = Color(0, 0, 0, 0.501961)
 
 [node name="RadialMenu" type="Node2D" parent="." unique_id=759195438]
+unique_name_in_owner = true
 script = ExtResource("6_radial")
 label_settings = SubResource("LabelSettings_radial")
 center_option = SubResource("Resource_voxel")
 options = Array[ExtResource("7_option")]([SubResource("Resource_line"), SubResource("Resource_wall"), SubResource("Resource_floor"), SubResource("Resource_cuboid"), SubResource("Resource_circle"), SubResource("Resource_cylinder"), SubResource("Resource_sphere"), SubResource("Resource_pyramid"), SubResource("Resource_cone"), SubResource("Resource_slope"), SubResource("Resource_sloped_pyramid")])
 metadata/_custom_type_script = "uid://88cgk7p5dxno"
 
-[connection signal="items_changed" from="HotBars/HBoxContainer/MaterialHotBar" to="." method="_on_hotbar_items_changed"]
+[connection signal="items_changed" from="Hotbars/HBoxContainer/MaterialHotbar" to="." method="_on_hotbar_items_changed"]
 [connection signal="material_pressed" from="MaterialBrowser" to="." method="_on_material_browser_material_pressed"]

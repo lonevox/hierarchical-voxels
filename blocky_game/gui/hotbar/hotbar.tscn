@@ -14,7 +14,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="HotBar" type="PanelContainer" unique_id=1263695859]
+[node name="Hotbar" type="PanelContainer" unique_id=1263695859]
 self_modulate = Color(1, 1, 1, 0)
 offset_right = 372.0
 offset_bottom = 84.0

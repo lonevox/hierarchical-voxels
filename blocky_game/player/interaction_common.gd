@@ -1,6 +1,3 @@
-const Blocks = preload("../blocks/blocks.gd")
-
-
 static func place_voxel(
 		terrain_tool: VoxelTool,
 		pos: Vector3i,
